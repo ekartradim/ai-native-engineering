@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code vs Cursor — AI-Native Engineering</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">AI-Native Engineering</a>
+  <a href="index.html">Hub</a>
+  <a href="artifacts/ai_native_philosophy.html">Philosophy</a>
+  <a href="artifacts/ai_native_workflow.html">Workflow</a>
+  <a href="artifacts/ai_native_best_practices.html">Practices</a>
+  <a href="artifacts/cursor_invocation_graph.html">Invocation Graph</a>
+  <a href="artifacts/cursor_harness.html">Harness</a>
+  <a href="artifacts/skill_creator_workflow.html">Skill Creator</a>
+  <a href="comparison.html" class="active">CC vs Cursor</a>
+  <a href="plugins.html">SP vs CE</a>
+  <a href="migration.html">CE Migration</a>
+</nav>
+
+<div class="container">
+
+  <div class="page-header">
+    <div class="eyebrow">Tool Comparison</div>
+    <h1>Claude Code vs <span>Cursor</span></h1>
+    <p class="subtitle">Quick reference for the main building blocks of both tools. Based on live docs — Cursor 2.4+, Claude Code 2.1.x, April 2026.</p>
+  </div>
+
+  <h2>At a Glance</h2>
+  <table>
+    <tr><th>Component</th><th>Cursor</th><th>Claude Code</th></tr>
+    <tr><td><strong>Persistent instructions</strong></td><td>Rules (<code>.cursor/rules/</code>) + <code>AGENTS.md</code></td><td><code>CLAUDE.md</code> + <code>.claude/rules/</code></td></tr>
+    <tr><td><strong>Cross-session memory</strong></td><td>No built-in auto-memory</td><td>Auto memory (<code>MEMORY.md</code>, written by Claude)</td></tr>
+    <tr><td><strong>Skills</strong></td><td><code>SKILL.md</code> files, context-injected</td><td><code>SKILL.md</code> files, context-injected</td></tr>
+    <tr><td><strong>Subagents</strong></td><td><code>.cursor/agents/*.md</code>, flat file-based</td><td><code>.claude/agents/*.md</code>, namespace-aware</td></tr>
+    <tr><td><strong>Agent dispatch</strong></td><td>Built-in types + plain-name custom agents</td><td>Any registered agent including namespaced plugin agents</td></tr>
+    <tr><td><strong>Nested subagents</strong></td><td>Limited — depends on plan/model</td><td>Blocked — main-only per docs</td></tr>
+    <tr><td><strong>Hooks</strong></td><td><code>hooks.json</code>, shell + prompt hooks</td><td><code>hooks</code> in settings, shell + HTTP + prompt hooks</td></tr>
+    <tr><td><strong>Plugins</strong></td><td>Not applicable (no plugin system)</td><td><code>.claude/plugins/</code> — skills, agents, MCP config</td></tr>
+    <tr><td><strong>Rules scope</strong></td><td>Project, User, Team (paid plans)</td><td>Project, User, Org (managed policy)</td></tr>
+    <tr><td><strong>MCP</strong></td><td><code>~/.cursor/mcp.json</code> or <code>.cursor/mcp.json</code></td><td><code>.mcp.json</code> or <code>~/.claude/mcp.json</code></td></tr>
+  </table>
+
+  <!-- Skills -->
+  <details>
+    <summary>Skills</summary>
+    <p>Skills package reusable workflows and domain knowledge. They load into the main agent's context — no separate window.</p>
+    <table>
+      <tr><th></th><th>Cursor</th><th>Claude Code</th></tr>
+      <tr><td><strong>File format</strong></td><td><code>SKILL.md</code> with YAML frontmatter</td><td>Same</td></tr>
+      <tr><td><strong>Locations</strong></td><td><code>.cursor/skills/</code>, <code>~/.cursor/skills/</code>, also loads from <code>.claude/skills/</code> as fallback</td><td><code>.claude/skills/</code>, <code>~/.claude/skills/</code></td></tr>
+      <tr><td><strong>Invoked by</strong></td><td><code>/skill-name</code> or auto-applied by agent</td><td><code>/skill-name</code> or auto-applied by agent</td></tr>
+      <tr><td><strong>Disable auto-apply</strong></td><td><code>disable-model-invocation: true</code> in frontmatter</td><td>Not a frontmatter option — always context-eligible</td></tr>
+      <tr><td><strong>Can include scripts</strong></td><td>Yes (<code>scripts/</code>, <code>references/</code>, <code>assets/</code> subdirs)</td><td>Yes (same structure)</td></tr>
+      <tr><td><strong>Can spawn subagents</strong></td><td>No — skill is context only. Main agent decides to delegate</td><td>Workflow text uses <code>Task(...)</code> / <code>Agent(...)</code> — model emits the tool call</td></tr>
+      <tr><td><strong>Install from GitHub</strong></td><td>Settings &rarr; Rules &rarr; Remote Rule</td><td>Via plugin system or manual clone</td></tr>
+    </table>
+    <div class="callout">
+      <strong>Key difference:</strong> In Claude Code, plugin skills reliably emit <code>Agent</code> tool calls. In Cursor, a skill can only instruct the main agent in natural language; the model then decides whether to call the Task tool.
+    </div>
+  </details>
+
+  <!-- Memory -->
+  <details>
+    <summary>Memory / Persistent Instructions</summary>
+    <table>
+      <tr><th></th><th>Cursor</th><th>Claude Code</th></tr>
+      <tr><td><strong>Primary file</strong></td><td><code>AGENTS.md</code> or <code>.cursor/rules/*.mdc</code></td><td><code>CLAUDE.md</code></td></tr>
+      <tr><td><strong>User-level file</strong></td><td><code>~/.cursor/rules/</code> or User Rules in settings</td><td><code>~/.claude/CLAUDE.md</code></td></tr>
+      <tr><td><strong>Org / policy level</strong></td><td>Team Rules (dashboard, paid plans)</td><td>Managed policy: system-level <code>CLAUDE.md</code></td></tr>
+      <tr><td><strong>Scoped rules</strong></td><td>Glob patterns on rule files</td><td><code>.claude/rules/</code> with <code>paths:</code> frontmatter</td></tr>
+      <tr><td><strong>Auto memory</strong></td><td>None</td><td>Claude writes <code>MEMORY.md</code> itself; first 200 lines loaded every session</td></tr>
+      <tr><td><strong>Session memory</strong></td><td>Context window only</td><td>Context window + auto memory file</td></tr>
+      <tr><td><strong>@import syntax</strong></td><td>No</td><td><code>@path/to/file</code> in CLAUDE.md</td></tr>
+    </table>
+    <h3>Scopes Compared</h3>
+    <table>
+      <tr><th>Scope</th><th>Cursor</th><th>Claude Code</th></tr>
+      <tr><td><strong>Session only</strong></td><td>User Rules in Settings UI</td><td>Inline conversation context</td></tr>
+      <tr><td><strong>Project</strong></td><td><code>.cursor/rules/</code> or <code>AGENTS.md</code></td><td><code>CLAUDE.md</code> or <code>.claude/rules/</code></td></tr>
+      <tr><td><strong>All projects</strong></td><td><code>~/.cursor/rules/</code></td><td><code>~/.claude/CLAUDE.md</code></td></tr>
+      <tr><td><strong>Org</strong></td><td>Team Rules via dashboard</td><td>Managed policy CLAUDE.md at system path</td></tr>
+    </table>
+  </details>
+
+  <!-- Subagents -->
+  <details>
+    <summary>Subagents</summary>
+    <p>Subagents run in a <strong>separate context window</strong> — isolated from the main conversation.</p>
+    <table>
+      <tr><th></th><th>Cursor</th><th>Claude Code</th></tr>
+      <tr><td><strong>File locations</strong></td><td><code>.cursor/agents/</code>, <code>~/.cursor/agents/</code>, reads <code>.claude/agents/</code></td><td><code>.claude/agents/</code>, <code>~/.claude/agents/</code>, plugin <code>agents/</code></td></tr>
+      <tr><td><strong>Agent dispatch key</strong></td><td>Flat filename only</td><td>Flat filename <strong>or</strong> namespace</td></tr>
+      <tr><td><strong>Nested subagents</strong></td><td>Not generally guaranteed — depends on plan/model</td><td>Blocked per docs — main agent only</td></tr>
+      <tr><td><strong>Built-in agents</strong></td><td><code>explore</code>, <code>bash</code>, <code>browser</code></td><td><code>explore</code>, <code>plan</code>, <code>general-purpose</code>, <code>bash</code></td></tr>
+      <tr><td><strong>Tool restriction</strong></td><td><code>readonly: true</code></td><td><code>tools:</code> allowlist or <code>disallowedTools:</code> denylist</td></tr>
+      <tr><td><strong>Model per agent</strong></td><td><code>model: fast | inherit | &lt;id&gt;</code></td><td><code>model: haiku | sonnet | opus | inherit | &lt;id&gt;</code></td></tr>
+      <tr><td><strong>Subagent memory</strong></td><td>None</td><td><code>memory: user | project | local</code></td></tr>
+      <tr><td><strong>Subagent hooks</strong></td><td>No</td><td><code>hooks:</code> field in frontmatter</td></tr>
+      <tr><td><strong>Subagent MCP</strong></td><td>Inherits parent</td><td>Inherits + <code>mcpServers:</code> field</td></tr>
+      <tr><td><strong>Permission mode</strong></td><td><code>readonly: true</code> only</td><td><code>permissionMode: default | acceptEdits | dontAsk | bypassPermissions | plan</code></td></tr>
+      <tr><td><strong>Git worktree</strong></td><td>No</td><td><code>isolation: worktree</code></td></tr>
+      <tr><td><strong>Parallel dispatch</strong></td><td>Multiple Task calls in one message</td><td>Multiple Agent/Task calls in one turn</td></tr>
+      <tr><td><strong>Parallel tip</strong></td><td>Must say "in parallel in a single message"</td><td>Model-emitted calls in one turn run in parallel</td></tr>
+    </table>
+    <div class="callout">
+      <strong>Namespace dispatch:</strong> Claude Code resolves <code>compound-engineering:research:repo-research-analyst</code> via a plugin namespace registry. Cursor only knows flat filenames — that string is rejected. This is the root cause of the CE symlink bridge need.
+    </div>
+  </details>
+
+  <!-- Hooks -->
+  <details>
+    <summary>Hooks</summary>
+    <p>Hooks run shell commands (or LLM prompts) automatically at lifecycle events.</p>
+    <table>
+      <tr><th></th><th>Cursor</th><th>Claude Code</th></tr>
+      <tr><td><strong>Config file</strong></td><td><code>hooks.json</code></td><td><code>hooks</code> in <code>.claude/settings.json</code></td></tr>
+      <tr><td><strong>Locations</strong></td><td><code>~/.cursor/hooks.json</code>, <code>.cursor/hooks.json</code></td><td><code>~/.claude/settings.json</code>, <code>.claude/settings.json</code></td></tr>
+      <tr><td><strong>Hook types</strong></td><td>Shell command, prompt (LLM-evaluated)</td><td>Shell command, HTTP endpoint, prompt</td></tr>
+      <tr><td><strong>Per-subagent hooks</strong></td><td>No</td><td><code>hooks:</code> frontmatter field</td></tr>
+    </table>
+    <h3>Cursor Hook Events</h3>
+    <table>
+      <tr><th>Event</th><th>When</th></tr>
+      <tr><td><code>sessionStart</code> / <code>sessionEnd</code></td><td>Session open/close</td></tr>
+      <tr><td><code>preToolUse</code> / <code>postToolUse</code></td><td>Any tool call</td></tr>
+      <tr><td><code>subagentStart</code> / <code>subagentStop</code></td><td>Subagent spawned/finished</td></tr>
+      <tr><td><code>beforeShellExecution</code> / <code>afterShellExecution</code></td><td>Shell commands</td></tr>
+      <tr><td><code>beforeMCPExecution</code> / <code>afterMCPExecution</code></td><td>MCP tool calls</td></tr>
+      <tr><td><code>beforeReadFile</code> / <code>afterFileEdit</code></td><td>File access/edits</td></tr>
+      <tr><td><code>beforeSubmitPrompt</code></td><td>Before prompt sent to model</td></tr>
+      <tr><td><code>preCompact</code></td><td>Before context compaction</td></tr>
+      <tr><td><code>stop</code></td><td>Agent finishes responding</td></tr>
+    </table>
+    <h3>Claude Code Hook Events</h3>
+    <table>
+      <tr><th>Event</th><th>When</th></tr>
+      <tr><td><code>SessionStart</code> / <code>SessionEnd</code></td><td>Session lifecycle</td></tr>
+      <tr><td><code>PreToolUse</code> / <code>PostToolUse</code></td><td>Any tool call (can block)</td></tr>
+      <tr><td><code>SubagentStart</code> / <code>SubagentStop</code></td><td>Subagent lifecycle</td></tr>
+      <tr><td><code>UserPromptSubmit</code></td><td>Before Claude processes your prompt</td></tr>
+      <tr><td><code>InstructionsLoaded</code></td><td>When CLAUDE.md or rules load</td></tr>
+      <tr><td><code>PreCompact</code> / <code>PostCompact</code></td><td>Context compaction</td></tr>
+      <tr><td><code>WorktreeCreate</code> / <code>WorktreeRemove</code></td><td>Git worktree lifecycle</td></tr>
+      <tr><td><code>FileChanged</code></td><td>Watched file changed on disk</td></tr>
+      <tr><td><code>TeammateIdle</code></td><td>Agent teams: teammate going idle</td></tr>
+    </table>
+  </details>
+
+  <!-- Plugins -->
+  <details>
+    <summary>Plugins (Claude Code only)</summary>
+    <p>Cursor has no plugin system. Claude Code has a first-class plugin layer.</p>
+    <table>
+      <tr><th>Concept</th><th>Claude Code</th></tr>
+      <tr><td><strong>Install</strong></td><td><code>bunx @every-env/compound-plugin install &lt;plugin&gt; [--to cursor]</code></td></tr>
+      <tr><td><strong>Cache location</strong></td><td><code>~/.claude/plugins/cache/&lt;source&gt;/&lt;name&gt;/&lt;version&gt;/</code></td></tr>
+      <tr><td><strong>What a plugin ships</strong></td><td>Skills, agents, commands, MCP config, hooks</td></tr>
+      <tr><td><strong>Scope</strong></td><td>User-global; <code>--to cursor</code> writes Cursor-compatible layer on top</td></tr>
+    </table>
+  </details>
+
+  <!-- Rules scopes -->
+  <details>
+    <summary>Rules / Instructions Scopes</summary>
+    <table>
+      <tr><th>Scope</th><th>Cursor</th><th>Claude Code</th></tr>
+      <tr><td><strong>Session-only</strong></td><td>User Rules in Settings UI</td><td>Inline conversation context</td></tr>
+      <tr><td><strong>Project</strong></td><td><code>.cursor/rules/*.mdc</code> or <code>AGENTS.md</code></td><td><code>CLAUDE.md</code> or <code>.claude/rules/*.md</code></td></tr>
+      <tr><td><strong>User (all projects)</strong></td><td><code>~/.cursor/rules/</code></td><td><code>~/.claude/CLAUDE.md</code></td></tr>
+      <tr><td><strong>Team / Org</strong></td><td>Team Rules (dashboard)</td><td>Managed policy CLAUDE.md</td></tr>
+      <tr><td><strong>Precedence</strong></td><td>Team &rarr; Project &rarr; User</td><td>Org policy &rarr; Project &rarr; User (more specific wins)</td></tr>
+      <tr><td><strong>Path-scoped</strong></td><td><code>globs:</code> in <code>.mdc</code> files</td><td><code>paths:</code> in <code>.claude/rules/*.md</code></td></tr>
+      <tr><td><strong>Always-on</strong></td><td><code>alwaysApply: true</code></td><td>Rules without <code>paths:</code> load unconditionally</td></tr>
+    </table>
+  </details>
+
+  <!-- MCP -->
+  <details>
+    <summary>MCP (Model Context Protocol)</summary>
+    <table>
+      <tr><th></th><th>Cursor</th><th>Claude Code</th></tr>
+      <tr><td><strong>Config file</strong></td><td><code>.cursor/mcp.json</code> or <code>~/.cursor/mcp.json</code></td><td><code>.mcp.json</code> or <code>~/.claude/mcp.json</code></td></tr>
+      <tr><td><strong>Per-subagent MCP</strong></td><td>Subagents inherit parent tools</td><td><code>mcpServers:</code> field in subagent frontmatter</td></tr>
+      <tr><td><strong>Tool limit</strong></td><td>~40 tools before accuracy degrades</td><td>No documented hard limit</td></tr>
+      <tr><td><strong>Compatibility</strong></td><td>Also reads <code>.claude/mcp.json</code> as fallback</td><td>Reads <code>.mcp.json</code> only</td></tr>
+    </table>
+  </details>
+
+  <!-- File compatibility -->
+  <details>
+    <summary>File Compatibility Matrix</summary>
+    <p>Cursor reads from both <code>.cursor/</code> and <code>.claude/</code> as fallback. CE files in <code>~/.claude/</code> work in Cursor without moving them.</p>
+    <table>
+      <tr><th>File type</th><th><code>.cursor/</code></th><th><code>.claude/</code> loaded by Cursor?</th><th><code>.cursor/</code> wins?</th></tr>
+      <tr><td><strong>Agents</strong></td><td>Primary</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td><strong>Skills</strong></td><td>Primary</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td><strong>Hooks</strong></td><td>Primary</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td><strong>MCP config</strong></td><td>Primary</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td><strong>Rules</strong></td><td><code>AGENTS.md</code> / <code>.cursor/rules/</code></td><td><code>CLAUDE.md</code> read by Claude Code only</td><td>N/A — different files</td></tr>
+    </table>
+  </details>
+
+  <footer>
+    <a href="https://cursor.com/docs">Cursor docs</a> &middot;
+    <a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code docs</a> &middot;
+    <a href="index.html">Back to hub</a>
+  </footer>
+
+</div>
+</body>
+</html>

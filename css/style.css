@@ -1,0 +1,307 @@
+/* AI-Native Engineering Dashboard — shared styles */
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap');
+
+:root {
+  --bg: #0d0d0b;
+  --surface: #141412;
+  --border: #2a2a26;
+  --border-bright: #3d3d38;
+  --text-primary: #e8e6df;
+  --text-secondary: #a09a8c;
+  --text-dim: #706b60;
+  --accent: #c8b97a;
+  --accent-dim: #7a6f43;
+  --teal: #5dbca0;
+  --teal-dim: #2d6b5a;
+  --red: #c8604a;
+  --red-dim: #6b2d20;
+  --orange: #e8a05a;
+  --orange-dim: #6b4420;
+  --blue: #a0c8d4;
+  --blue-dim: #1d4a56;
+  --purple: #8b7fd4;
+  --purple-dim: #3d3870;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  padding: 0;
+}
+
+/* Nav */
+nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 32px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+nav .nav-brand {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--accent);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+nav a {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: color 0.15s;
+}
+
+nav a:hover { color: var(--text-primary); }
+nav a.active { color: var(--accent); }
+
+/* Layout */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 32px;
+}
+
+/* Header */
+.page-header {
+  margin-bottom: 48px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 24px;
+}
+
+.eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+h1 {
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+h1 span { color: var(--accent); }
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+/* Group headings */
+.group-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 40px 0 16px;
+  padding: 4px 10px;
+  display: inline-block;
+  border-radius: 2px;
+}
+
+.group-methodology { background: var(--purple-dim); color: var(--purple); }
+.group-architecture { background: var(--teal-dim); color: var(--teal); }
+.group-comparisons { background: var(--orange-dim); color: var(--orange); }
+.group-migration { background: var(--blue-dim); color: var(--blue); }
+
+/* Card grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.card-grid.single { grid-template-columns: 1fr; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 24px;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  display: block;
+}
+
+.card:hover {
+  border-color: var(--border-bright);
+  box-shadow: 0 4px 32px rgba(0,0,0,0.4);
+  z-index: 2;
+}
+
+.card-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.card-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.card-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 1px;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.tag-artifact { background: var(--accent-dim); color: var(--accent); }
+.tag-new { background: var(--teal-dim); color: var(--teal); }
+
+/* Content pages */
+h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 40px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 28px 0 12px;
+  color: var(--accent);
+}
+
+p, li {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+ul, ol { padding-left: 20px; margin-bottom: 16px; }
+li { margin-bottom: 4px; }
+p { margin-bottom: 12px; }
+
+strong { color: var(--text-primary); font-weight: 600; }
+
+a { color: var(--accent); }
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0 24px;
+  font-size: 13px;
+}
+
+th {
+  background: var(--surface);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-align: left;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  font-weight: 500;
+}
+
+td {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* Code blocks */
+pre {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: 2px;
+  overflow-x: auto;
+  margin: 12px 0 20px;
+}
+
+code {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--teal);
+}
+
+pre code { color: var(--text-secondary); }
+
+/* Collapsible */
+details {
+  margin: 12px 0;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+summary {
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+summary:hover { color: var(--accent); }
+
+details[open] summary { border-bottom: 1px solid var(--border); }
+
+details > :not(summary) { padding: 0 16px; }
+details > table { margin: 0; }
+details > p:first-of-type { margin-top: 16px; }
+
+/* Callout box */
+.callout {
+  background: var(--surface);
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.callout.tip { border-left-color: var(--teal); }
+.callout.warn { border-left-color: var(--orange); }
+
+/* Footer */
+footer {
+  margin-top: 56px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+}

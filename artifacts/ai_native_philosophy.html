@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Native Philosophy</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0b;
+    --surface: #141412;
+    --border: #2a2a26;
+    --border-bright: #3d3d38;
+    --text-primary: #e8e6df;
+    --text-secondary: #a09a8c;
+    --text-dim: #706b60;
+    --accent: #c8b97a;
+    --accent-dim: #7a6f43;
+    --teal: #5dbca0;
+    --teal-dim: #2d6b5a;
+    --red: #c8604a;
+    --red-dim: #6b2d20;
+    --orange: #e8a05a;
+    --orange-dim: #6b4420;
+    --blue: #a0c8d4;
+    --blue-dim: #1d4a56;
+    --purple: #8b7fd4;
+    --purple-dim: #3d3870;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 48px 32px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    margin-bottom: 56px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  h1 span { color: var(--accent); }
+
+  .header-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  /* Principle card */
+  .principle {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 28px 28px 28px;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 0.45s ease forwards;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: default;
+  }
+
+  .principle:hover {
+    border-color: var(--border-bright);
+    box-shadow: 0 4px 40px rgba(0,0,0,0.5);
+    z-index: 2;
+  }
+
+  /* stagger */
+  .principle:nth-child(1) { animation-delay: 0.05s; border-radius: 2px 0 0 0; }
+  .principle:nth-child(2) { animation-delay: 0.12s; border-radius: 0 2px 0 0; }
+  .principle:nth-child(3) { animation-delay: 0.19s; }
+  .principle:nth-child(4) { animation-delay: 0.26s; }
+  .principle:nth-child(5) { animation-delay: 0.33s; border-radius: 0 0 0 2px; }
+  .principle:nth-child(6) { animation-delay: 0.40s; border-radius: 0 0 2px 0; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* large decorative number */
+  .principle-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 72px;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--border);
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    letter-spacing: -0.04em;
+    user-select: none;
+    transition: color 0.2s;
+  }
+
+  .principle:hover .principle-num {
+    color: var(--border-bright);
+  }
+
+  /* accent bar */
+  .principle::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+  }
+
+  /* color per principle */
+  .p1::before { background: var(--accent); }
+  .p2::before { background: var(--red); }
+  .p3::before { background: var(--teal); }
+  .p4::before { background: var(--orange); }
+  .p5::before { background: var(--blue); }
+  .p6::before { background: var(--purple); }
+
+  .p1:hover { border-color: var(--accent-dim); }
+  .p2:hover { border-color: var(--red-dim); }
+  .p3:hover { border-color: var(--teal-dim); }
+  .p4:hover { border-color: var(--orange-dim); }
+  .p5:hover { border-color: var(--blue-dim); }
+  .p6:hover { border-color: var(--purple-dim); }
+
+  .principle-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 1px;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+
+  .p1 .principle-tag { background: var(--accent-dim); color: var(--accent); }
+  .p2 .principle-tag { background: var(--red-dim); color: var(--red); }
+  .p3 .principle-tag { background: var(--teal-dim); color: var(--teal); }
+  .p4 .principle-tag { background: var(--orange-dim); color: var(--orange); }
+  .p5 .principle-tag { background: var(--blue-dim); color: var(--blue); }
+  .p6 .principle-tag { background: var(--purple-dim); color: var(--purple); }
+
+  .principle-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    margin-bottom: 12px;
+    padding-right: 48px;
+  }
+
+  .p1 .principle-title { color: var(--accent); }
+  .p2 .principle-title { color: var(--red); }
+  .p3 .principle-title { color: var(--teal); }
+  .p4 .principle-title { color: var(--orange); }
+  .p5 .principle-title { color: var(--blue); }
+  .p6 .principle-title { color: var(--purple); }
+
+  .principle-mandate {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding: 4px 8px;
+    border-radius: 1px;
+    display: inline-block;
+  }
+
+  .always { background: rgba(200,185,122,0.08); color: var(--accent); border: 1px solid var(--accent-dim); }
+  .always-red { background: rgba(200,96,74,0.08); color: var(--red); border: 1px solid var(--red-dim); }
+  .always-teal { background: rgba(93,188,160,0.08); color: var(--teal); border: 1px solid var(--teal-dim); }
+  .always-orange { background: rgba(232,160,90,0.08); color: var(--orange); border: 1px solid var(--orange-dim); }
+  .always-blue { background: rgba(160,200,212,0.08); color: var(--blue); border: 1px solid var(--blue-dim); }
+  .always-purple { background: rgba(139,127,212,0.08); color: var(--purple); border: 1px solid var(--purple-dim); }
+
+  .principle-body {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  /* divider line between sections */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 48px 0;
+    position: relative;
+  }
+
+  .divider::after {
+    content: 'PRINCIPLES';
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    position: absolute;
+    top: -6px;
+    left: 0;
+    background: var(--bg);
+    padding-right: 12px;
+  }
+
+  /* Nav */
+  .hub-nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 32px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; position: sticky; top: 0; z-index: 100; margin: -48px -32px 48px; }
+  .hub-nav a { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-secondary); text-decoration: none; letter-spacing: 0.04em; }
+  .hub-nav a:hover { color: var(--text-primary); }
+  .hub-nav .nav-brand { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: var(--accent); }
+
+  /* footer */
+  footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .footer-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    max-width: 460px;
+  }
+
+  .footer-note strong {
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+
+  .mandate-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-end;
+  }
+
+  .mandate-legend-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+</style>
+</head>
+<body>
+<nav class="hub-nav">
+  <a href="../index.html" class="nav-brand">AI-Native Engineering</a>
+  <a href="../index.html">Hub</a>
+  <a href="ai_native_philosophy.html" class="active">Philosophy</a>
+  <a href="ai_native_workflow.html">Workflow</a>
+  <a href="ai_native_best_practices.html">Practices</a>
+  <a href="cursor_invocation_graph.html">Invocation Graph</a>
+  <a href="cursor_harness.html">Harness</a>
+  <a href="skill_creator_workflow.html">Skill Creator</a>
+  <a href="../comparison.html">CC vs Cursor</a>
+  <a href="../plugins.html">SP vs CE</a>
+  <a href="../migration.html">CE Migration</a>
+</nav>
+<div class="container">
+
+  <header>
+    <div>
+      <div class="eyebrow">AI-native development</div>
+      <h1>Philo<span>sophy</span></h1>
+    </div>
+    <div class="header-meta">
+      6 principles<br>
+      always enforced<br>
+      no exceptions
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <!-- 1 Plan first -->
+    <div class="principle p1">
+      <div class="principle-num">01</div>
+      <div class="principle-tag">plan</div>
+      <div class="principle-title">Plan first,<br>always</div>
+      <div class="principle-mandate always">always enforced</div>
+      <div class="principle-body">
+        Write a detailed plan before writing any code. The plan defines exact file paths, logic, and verification steps. No implementation begins without a written, approved plan.
+      </div>
+    </div>
+
+    <!-- 2 TDD -->
+    <div class="principle p2">
+      <div class="principle-num">02</div>
+      <div class="principle-tag">verify</div>
+      <div class="principle-title">Test-driven<br>development</div>
+      <div class="principle-mandate always-red">always enforced</div>
+      <div class="principle-body">
+        Write and run tests, always. Red before green — a failing test must be observed before code is written to pass it. Code written before tests is deleted, no exceptions.
+      </div>
+    </div>
+
+    <!-- 3 Systematic -->
+    <div class="principle p3">
+      <div class="principle-num">03</div>
+      <div class="principle-tag">process</div>
+      <div class="principle-title">Systematic<br>over ad-hoc</div>
+      <div class="principle-mandate always-teal">process over guessing</div>
+      <div class="principle-body">
+        Follow the defined process even when it feels slower. Guessing and improvising create invisible debt. A repeatable system compounds in reliability over time.
+      </div>
+    </div>
+
+    <!-- 4 Complexity reduction -->
+    <div class="principle p4">
+      <div class="principle-num">04</div>
+      <div class="principle-tag">design</div>
+      <div class="principle-title">Complexity<br>reduction</div>
+      <div class="principle-mandate always-orange">simplicity is primary goal</div>
+      <div class="principle-body">
+        Simplicity is the primary design goal, not a nice-to-have. When two solutions work, choose the simpler one. Complexity is a liability that must be consciously accepted, never defaulted into.
+      </div>
+    </div>
+
+    <!-- 5 Evidence -->
+    <div class="principle p5">
+      <div class="principle-num">05</div>
+      <div class="principle-tag">integrity</div>
+      <div class="principle-title">Evidence<br>over claims</div>
+      <div class="principle-mandate always-blue">verify before declaring done</div>
+      <div class="principle-body">
+        Never declare success without evidence. Tests must pass, outputs must be observed, verification steps must be executed. Claims without evidence are not progress.
+      </div>
+    </div>
+
+    <!-- 6 Compound -->
+    <div class="principle p6">
+      <div class="principle-num">06</div>
+      <div class="principle-tag">learn</div>
+      <div class="principle-title">Compound<br>knowledge</div>
+      <div class="principle-mandate always-purple">always save lessons learned</div>
+      <div class="principle-body">
+        Save lessons learned to structured .md files after every task. Each run builds on the last. The system gets faster and smarter with every iteration — but only if knowledge is captured deliberately.
+      </div>
+    </div>
+
+  </div><!-- end grid -->
+
+  <footer>
+    <div class="footer-note">
+      These principles are not guidelines — they are <strong>constraints</strong>.<br>
+      Violating one breaks the guarantees the system depends on.<br>
+      The workflow enforces them structurally, not through willpower.
+    </div>
+    <div class="mandate-legend">
+      <div class="mandate-legend-item">
+        <div class="dot" style="background:var(--accent)"></div> plan first
+      </div>
+      <div class="mandate-legend-item">
+        <div class="dot" style="background:var(--red)"></div> test-driven
+      </div>
+      <div class="mandate-legend-item">
+        <div class="dot" style="background:var(--teal)"></div> systematic
+      </div>
+      <div class="mandate-legend-item">
+        <div class="dot" style="background:var(--orange)"></div> simplicity
+      </div>
+      <div class="mandate-legend-item">
+        <div class="dot" style="background:var(--blue)"></div> evidence
+      </div>
+      <div class="mandate-legend-item">
+        <div class="dot" style="background:var(--purple)"></div> compound
+      </div>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

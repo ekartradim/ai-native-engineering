@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Native Best Practices</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0b;
+    --surface: #141412;
+    --surface2: #111110;
+    --border: #2a2a26;
+    --border-bright: #3d3d38;
+    --text-primary: #e8e6df;
+    --text-secondary: #a09a8c;
+    --text-dim: #706b60;
+    --accent: #c8b97a;
+    --accent-dim: #7a6f43;
+    --teal: #5dbca0;
+    --teal-dim: #2d6b5a;
+    --red: #c8604a;
+    --red-dim: #6b2d20;
+    --orange: #e8a05a;
+    --orange-dim: #6b4420;
+    --blue: #a0c8d4;
+    --blue-dim: #1d4a56;
+    --purple: #8b7fd4;
+    --purple-dim: #3d3870;
+    --green: #7ab87a;
+    --green-dim: #2d5a2d;
+    --pink: #d48ba0;
+    --pink-dim: #6b2d42;
+    --yellow: #d4c46a;
+    --yellow-dim: #6b5f20;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 48px 32px 64px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── HEADER ── */
+  header {
+    margin-bottom: 52px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .header-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* ── SECTION ── */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 44px 0 14px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── GRID ── */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 22px 22px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: default;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUp 0.4s ease forwards;
+  }
+
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+  .card:hover {
+    border-color: var(--border-bright);
+    box-shadow: 0 4px 32px rgba(0,0,0,0.5);
+    z-index: 2;
+  }
+
+  /* left accent bar */
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+
+  /* critical badge */
+  .critical-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+
+  .critical-badge .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .card-body {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  .card-body strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 1px 5px;
+    border: 1px solid var(--border-bright);
+    border-radius: 1px;
+    color: var(--text-secondary);
+    display: inline-block;
+    margin: 1px 1px 0 0;
+  }
+
+  .link {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--blue-dim);
+    text-decoration: none;
+    border-bottom: 1px solid var(--blue-dim);
+    transition: color 0.15s, border-color 0.15s;
+    word-break: break-all;
+  }
+
+  .link:hover { color: var(--blue); border-color: var(--blue); }
+
+  /* stagger */
+  .card:nth-child(1)  { animation-delay: 0.03s; }
+  .card:nth-child(2)  { animation-delay: 0.07s; }
+  .card:nth-child(3)  { animation-delay: 0.11s; }
+  .card:nth-child(4)  { animation-delay: 0.15s; }
+  .card:nth-child(5)  { animation-delay: 0.19s; }
+  .card:nth-child(6)  { animation-delay: 0.23s; }
+  .card:nth-child(7)  { animation-delay: 0.27s; }
+  .card:nth-child(8)  { animation-delay: 0.31s; }
+  .card:nth-child(9)  { animation-delay: 0.35s; }
+  .card:nth-child(10) { animation-delay: 0.39s; }
+  .card:nth-child(11) { animation-delay: 0.43s; }
+  .card:nth-child(12) { animation-delay: 0.47s; }
+  .card:nth-child(13) { animation-delay: 0.51s; }
+  .card:nth-child(14) { animation-delay: 0.55s; }
+  .card:nth-child(15) { animation-delay: 0.59s; }
+  .card:nth-child(16) { animation-delay: 0.63s; }
+  .card:nth-child(17) { animation-delay: 0.67s; }
+  .card:nth-child(18) { animation-delay: 0.71s; }
+  .card:nth-child(19) { animation-delay: 0.75s; }
+  .card:nth-child(20) { animation-delay: 0.79s; }
+
+  /* ── COLOR THEMES ── */
+  .c-red::before    { background: var(--red); }
+  .c-red .card-title { color: var(--red); }
+  .c-red .critical-badge { background: var(--red-dim); color: var(--red); }
+  .c-red:hover { border-color: var(--red-dim) !important; }
+
+  .c-orange::before  { background: var(--orange); }
+  .c-orange .card-title { color: var(--orange); }
+  .c-orange .critical-badge { background: var(--orange-dim); color: var(--orange); }
+  .c-orange:hover { border-color: var(--orange-dim) !important; }
+
+  .c-accent::before  { background: var(--accent); }
+  .c-accent .card-title { color: var(--accent); }
+  .c-accent .critical-badge { background: var(--accent-dim); color: var(--accent); }
+  .c-accent:hover { border-color: var(--accent-dim) !important; }
+
+  .c-teal::before    { background: var(--teal); }
+  .c-teal .card-title { color: var(--teal); }
+  .c-teal .critical-badge { background: var(--teal-dim); color: var(--teal); }
+  .c-teal:hover { border-color: var(--teal-dim) !important; }
+
+  .c-blue::before    { background: var(--blue); }
+  .c-blue .card-title { color: var(--blue); }
+  .c-blue .critical-badge { background: var(--blue-dim); color: var(--blue); }
+  .c-blue:hover { border-color: var(--blue-dim) !important; }
+
+  .c-purple::before  { background: var(--purple); }
+  .c-purple .card-title { color: var(--purple); }
+  .c-purple .critical-badge { background: var(--purple-dim); color: var(--purple); }
+  .c-purple:hover { border-color: var(--purple-dim) !important; }
+
+  .c-green::before   { background: var(--green); }
+  .c-green .card-title { color: var(--green); }
+  .c-green .critical-badge { background: var(--green-dim); color: var(--green); }
+  .c-green:hover { border-color: var(--green-dim) !important; }
+
+  .c-pink::before    { background: var(--pink); }
+  .c-pink .card-title { color: var(--pink); }
+  .c-pink .critical-badge { background: var(--pink-dim); color: var(--pink); }
+  .c-pink:hover { border-color: var(--pink-dim) !important; }
+
+  .c-yellow::before  { background: var(--yellow); }
+  .c-yellow .card-title { color: var(--yellow); }
+  .c-yellow .critical-badge { background: var(--yellow-dim); color: var(--yellow); }
+  .c-yellow:hover { border-color: var(--yellow-dim) !important; }
+
+  /* ── LINKS SECTION ── */
+  .links-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  .link-group {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 22px;
+    transition: border-color 0.2s;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUp 0.4s ease forwards;
+  }
+
+  .link-group:hover { border-color: var(--border-bright); }
+
+  .link-group-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .link-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 12px;
+  }
+
+  .link-item:last-child { margin-bottom: 0; }
+
+  .link-item-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+
+  .link-item-url {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    word-break: break-all;
+    line-height: 1.5;
+  }
+
+  .link-item-url:hover { border-bottom-color: currentColor; }
+
+  .link-item-url.c-teal-url   { color: var(--teal-dim); }
+  .link-item-url.c-teal-url:hover { color: var(--teal); }
+  .link-item-url.c-accent-url { color: var(--accent-dim); }
+  .link-item-url.c-accent-url:hover { color: var(--accent); }
+  .link-item-url.c-blue-url   { color: var(--blue-dim); }
+  .link-item-url.c-blue-url:hover { color: var(--blue); }
+  .link-item-url.c-purple-url { color: var(--purple-dim); }
+  .link-item-url.c-purple-url:hover { color: var(--purple); }
+  .link-item-url.c-orange-url { color: var(--orange-dim); }
+  .link-item-url.c-orange-url:hover { color: var(--orange); }
+  .link-item-url.c-green-url  { color: var(--green-dim); }
+  .link-item-url.c-green-url:hover { color: var(--green); }
+  .link-item-url.c-pink-url   { color: var(--pink-dim); }
+  .link-item-url.c-pink-url:hover { color: var(--pink); }
+  .link-item-url.c-red-url    { color: var(--red-dim); }
+  .link-item-url.c-red-url:hover { color: var(--red); }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 52px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+  }
+
+  .legend-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  /* Nav */
+  .hub-nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 32px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; position: sticky; top: 0; z-index: 100; margin: -48px -32px 48px; }
+  .hub-nav a { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-secondary); text-decoration: none; letter-spacing: 0.04em; }
+  .hub-nav a:hover { color: var(--text-primary); }
+  .hub-nav .nav-brand { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: var(--accent); }
+</style>
+</head>
+<body>
+<nav class="hub-nav">
+  <a href="../index.html" class="nav-brand">AI-Native Engineering</a>
+  <a href="../index.html">Hub</a>
+  <a href="ai_native_philosophy.html">Philosophy</a>
+  <a href="ai_native_workflow.html">Workflow</a>
+  <a href="ai_native_best_practices.html" class="active">Practices</a>
+  <a href="cursor_invocation_graph.html">Invocation Graph</a>
+  <a href="cursor_harness.html">Harness</a>
+  <a href="skill_creator_workflow.html">Skill Creator</a>
+  <a href="../comparison.html">CC vs Cursor</a>
+  <a href="../plugins.html">SP vs CE</a>
+  <a href="../migration.html">CE Migration</a>
+</nav>
+<div class="container">
+
+  <header>
+    <div>
+      <div class="eyebrow">AI-native development</div>
+      <h1>Best <span>Practices</span></h1>
+    </div>
+    <div class="header-meta">
+      19 practices<br>
+      daily workflow<br>
+      compounds over time
+    </div>
+  </header>
+
+  <!-- ══ CONTEXT & SESSION MANAGEMENT ══ -->
+  <div class="section-label">Context &amp; session management</div>
+  <div class="grid-2">
+
+    <div class="card c-red">
+      <div class="critical-badge"><span class="dot"></span>critical</div>
+      <div class="card-title">Context rot — open new sessions per feature</div>
+      <div class="card-body">
+        As the context window fills, models lose track of earlier instructions and start making more mistakes. This is called <strong>context rot</strong>. Always start a fresh session for each new feature or significant task. Never let a single session grow unbounded.
+      </div>
+    </div>
+
+    <div class="card c-teal">
+      <div class="card-title">Carry context forward with @ previous chats</div>
+      <div class="card-body">
+        When you need context from a previous session, use <span class="tag">@ find previous chats</span>. The agent will summarise the relevant parts and inject them into the new session — no copy-pasting, no re-explaining from scratch.
+      </div>
+    </div>
+
+    <div class="card c-orange">
+      <div class="card-title">Limit active MCPs — tool schemas eat context</div>
+      <div class="card-body">
+        Every enabled MCP server's tool descriptions are injected into the context window at session start, regardless of whether you use them. Keep only the MCPs you actually need for the current session active. Disable the rest.
+      </div>
+    </div>
+
+    <div class="card c-red">
+      <div class="critical-badge"><span class="dot"></span>critical</div>
+      <div class="card-title">Always give the agent up-to-date docs</div>
+      <div class="card-body">
+        For any specific technology, use <span class="tag">@ docs</span> to add live documentation from the internet. Model training data goes stale fast — <strong>up-to-date context is the key</strong> to accurate, non-hallucinated output. You can add any URL as a doc source.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ MODEL SELECTION ══ -->
+  <div class="section-label">Model selection &amp; cost</div>
+  <div class="grid-3">
+
+    <div class="card c-purple">
+      <div class="card-title">Smartest models for heavy thinking</div>
+      <div class="card-body">
+        Use <strong>Opus 4.6</strong> for planning complex features, deep codebase analysis, and security audits. The investment pays off when precision matters. Reserve it for the work where mistakes are expensive.
+      </div>
+    </div>
+
+    <div class="card c-accent">
+      <div class="card-title">Cheaper models for execution</div>
+      <div class="card-body">
+        Once the plan is ready, switch to <strong>Sonnet or Haiku</strong> for implementation tasks. Plan with the best, build with the pragmatic. For simple questions use <strong>Gemini Flash</strong> — very cheap, fast enough.
+        <br><br>
+        <a class="link" href="https://cursor.com/docs/models-and-pricing" target="_blank">cursor.com/docs/models-and-pricing</a>
+      </div>
+    </div>
+
+    <div class="card c-red">
+      <div class="critical-badge"><span class="dot"></span>critical</div>
+      <div class="card-title">Use AI-native technologies</div>
+      <div class="card-body">
+        If you don't know the technology, pick the AI-native one. <strong>Python, React, TypeScript</strong> are trained on far more code than niche stacks. Agents are best in these — fewer hallucinations, better tooling, faster iteration.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ AGENT MINDSET ══ -->
+  <div class="section-label">Agent mindset</div>
+  <div class="grid-2">
+
+    <div class="card c-red">
+      <div class="critical-badge"><span class="dot"></span>critical</div>
+      <div class="card-title">Think of the agent like a human collaborator</div>
+      <div class="card-body">
+        Give the agent <strong>the same tools and context you have</strong> so it can do the job properly. A human joining cold can't work without access to the codebase, docs, and a clear brief. Neither can the agent.
+        <br><br>
+        <a class="link" href="https://github.com/EveryInc/compound-engineering-plugin/blob/main/plugins/compound-engineering/skills/agent-native-architecture/SKILL.md" target="_blank">agent-native-architecture SKILL.md ↗</a>
+      </div>
+    </div>
+
+    <div class="card c-red">
+      <div class="critical-badge"><span class="dot"></span>critical</div>
+      <div class="card-title">Be maximally specific — models cannot read your mind</div>
+      <div class="card-body">
+        When asking for changes without a proper plan, vague instructions produce vague (or wrong) results. <strong>Specificity is kindness to the model.</strong> State what you want, what you don't want, what constraints apply, and what success looks like.
+      </div>
+    </div>
+
+    <div class="card c-teal">
+      <div class="card-title">AI-first mindset — use skill creator, not custom code</div>
+      <div class="card-body">
+        You don't need to hand-write agents, hooks, or skills from scratch. Use the <strong>skill creator</strong> to build them. The same applies to subagents and hooks. Let the AI build your AI tooling — that's the compound advantage.
+      </div>
+    </div>
+
+    <div class="card c-blue">
+      <div class="card-title">You can revert changes during a session</div>
+      <div class="card-body">
+        In agent mode, changes during a session can be rolled back easily before committing. Use this safety net — experiment, inspect the diff, revert what you don't want. You don't lose work between session checkpoints.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ PROJECT HYGIENE ══ -->
+  <div class="section-label">Project hygiene &amp; memory</div>
+  <div class="grid-2">
+
+    <div class="card c-red">
+      <div class="critical-badge"><span class="dot"></span>critical</div>
+      <div class="card-title">Commit after every workflow step with git</div>
+      <div class="card-body">
+        Commit after every completed step: <span class="tag">plan</span> → <span class="tag">work</span> → <span class="tag">test</span> → <span class="tag">code review</span> → <span class="tag">docs + compound</span>. Granular commits mean easy rollbacks and recoverable code that was accidentally rewritten.
+      </div>
+    </div>
+
+    <div class="card c-red">
+      <div class="critical-badge"><span class="dot"></span>critical</div>
+      <div class="card-title">Keep project structure clean after architectural changes</div>
+      <div class="card-body">
+        Mess compounds just like knowledge does — but in the wrong direction. <strong>Clean the structure after every bigger architectural change.</strong> A degraded project layout makes future sessions slower and more error-prone.
+      </div>
+    </div>
+
+    <div class="card c-accent">
+      <div class="card-title">Maintain documentation.md, features.md, project-structure.md</div>
+      <div class="card-body">
+        Update these after each feature. New sessions can read these three files instead of scanning the whole codebase. Add hooks that auto-read them on session start, or auto-update them on commit. Reduces context cost, improves accuracy.
+      </div>
+    </div>
+
+    <div class="card c-green">
+      <div class="card-title">Build a compounding system</div>
+      <div class="card-body">
+        Every session should leave the system better than it started: improve <span class="tag">skills</span>, refine <span class="tag">hooks</span>, tighten <span class="tag">rules</span>, build project-specific <span class="tag">agents</span>, update <span class="tag">memory</span>. The compound effect is the moat.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ SECURITY & QUALITY ══ -->
+  <div class="section-label">Security &amp; quality</div>
+  <div class="grid-3">
+
+    <div class="card c-red">
+      <div class="critical-badge"><span class="dot"></span>critical</div>
+      <div class="card-title">Security &amp; code quality audits</div>
+      <div class="card-body">
+        Run regular security and code quality audits. Build <strong>specialised commands, hooks, or agents</strong> for this work so it runs consistently — not ad-hoc. Proper security guardrails should be a permanent part of the harness.
+      </div>
+    </div>
+
+    <div class="card c-orange">
+      <div class="card-title">Be careful with dependencies</div>
+      <div class="card-body">
+        <strong>Supply chain attacks are common.</strong> Review what you install. Prefer well-maintained packages with clear ownership. Don't let the agent install arbitrary dependencies without review — treat package.json and requirements.txt as attack surfaces.
+      </div>
+    </div>
+
+    <div class="card c-yellow">
+      <div class="card-title">Visualise architecture with Mermaid</div>
+      <div class="card-body">
+        Use <span class="tag">mermaid</span> diagrams to render parts of your solution architecture. Easier to spot inconsistencies visually than in code. Helps both you and the agent understand how components relate before making changes.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ TOOLING & DX ══ -->
+  <div class="section-label">Tooling &amp; developer experience</div>
+  <div class="grid-3">
+
+    <div class="card c-pink">
+      <div class="critical-badge"><span class="dot"></span>critical</div>
+      <div class="card-title">termcolor for console logging</div>
+      <div class="card-body">
+        Use <span class="tag">termcolor</span> for all console output. Coloured logs make errors immediately visible to both you and the agent. Debugging is faster when red means error and green means pass — without scanning walls of monochrome text.
+      </div>
+    </div>
+
+    <div class="card c-blue">
+      <div class="card-title">Browser MCP for frontend work</div>
+      <div class="card-body">
+        For frontend development, always enable the <strong>built-in browser MCP</strong>. The agent can see exactly what you see — including network logs, console errors, and DOM state. Closes the feedback loop that otherwise requires constant manual copy-pasting.
+      </div>
+    </div>
+
+    <div class="card c-green">
+      <div class="card-title">Compound knowledge — save lessons learned</div>
+      <div class="card-body">
+        After every task, save reusable lessons to structured <span class="tag">.md</span> files in a dedicated folder. Each run leaves behind institutional knowledge. The system gets faster and smarter with every session — but only if you capture it deliberately.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ HANDY LINKS ══ -->
+  <div class="section-label">Handy links &amp; documentation</div>
+  <div class="links-grid">
+
+    <div class="link-group" style="animation-delay:0.05s">
+      <div class="link-group-title">Skills &amp; agents — docs</div>
+
+      <div class="link-item">
+        <div class="link-item-label">Beyond Rules — commands, agents, skills</div>
+        <a class="link-item-url c-teal-url" href="https://agenticthinking.ai/blog/beyond-rules/" target="_blank">agenticthinking.ai/blog/beyond-rules/</a>
+      </div>
+
+      <div class="link-item">
+        <div class="link-item-label">Agent-native architecture SKILL.md</div>
+        <a class="link-item-url c-accent-url" href="https://github.com/EveryInc/compound-engineering-plugin/blob/main/plugins/compound-engineering/skills/agent-native-architecture/SKILL.md" target="_blank">github.com · EveryInc · agent-native-architecture</a>
+      </div>
+
+      <div class="link-item">
+        <div class="link-item-label">Simple skill creation — Anthropic official</div>
+        <a class="link-item-url c-blue-url" href="https://github.com/anthropics/claude-code/blob/main/plugins/plugin-dev/skills/skill-development/SKILL.md" target="_blank">github.com · anthropics/claude-code · skill-development/SKILL.md</a>
+      </div>
+
+      <div class="link-item">
+        <div class="link-item-label">Advanced skill creation — skill-creator</div>
+        <a class="link-item-url c-blue-url" href="https://github.com/anthropics/skills/tree/main/skills/skill-creator" target="_blank">github.com · anthropics/skills · skill-creator</a>
+      </div>
+
+      <div class="link-item">
+        <div class="link-item-label">Hook development — Anthropic official</div>
+        <a class="link-item-url c-purple-url" href="https://github.com/anthropics/claude-code/tree/main/plugins/plugin-dev/skills/hook-development" target="_blank">github.com · anthropics/claude-code · hook-development</a>
+      </div>
+
+      <div class="link-item">
+        <div class="link-item-label">Frontend design skill — Anthropic official</div>
+        <a class="link-item-url c-pink-url" href="https://github.com/anthropics/claude-code/tree/main/plugins/frontend-design" target="_blank">github.com · anthropics/claude-code · frontend-design</a>
+      </div>
+    </div>
+
+    <div class="link-group" style="animation-delay:0.12s">
+      <div class="link-group-title">Workflow systems &amp; marketplaces</div>
+
+      <div class="link-item">
+        <div class="link-item-label">Compound Engineering Plugin</div>
+        <a class="link-item-url c-orange-url" href="https://github.com/EveryInc/compound-engineering-plugin" target="_blank">github.com · EveryInc/compound-engineering-plugin</a>
+      </div>
+
+      <div class="link-item">
+        <div class="link-item-label">Superpowers — agent workflow system</div>
+        <a class="link-item-url c-orange-url" href="https://github.com/obra/superpowers" target="_blank">github.com · obra/superpowers</a>
+      </div>
+
+      <div class="link-item">
+        <div class="link-item-label">Compound Engineering guides</div>
+        <a class="link-item-url c-accent-url" href="https://every.to/guides/compound-engineering" target="_blank">every.to/guides/compound-engineering</a>
+      </div>
+
+      <div class="link-item">
+        <div class="link-item-label">Cursor Marketplace — plugins, skills, MCPs</div>
+        <a class="link-item-url c-teal-url" href="https://cursor.com/marketplace" target="_blank">cursor.com/marketplace</a>
+      </div>
+
+      <div class="link-item">
+        <div class="link-item-label">Anthropic Plugins — Claude official</div>
+        <a class="link-item-url c-red-url" href="https://claude.com/plugins/" target="_blank">claude.com/plugins/</a>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div>19 daily practices · compounds more you use · AI-native development</div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>critical</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>important</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div>workflow</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>compound</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>tooling</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>model</div>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Native Engineering Hub</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">AI-Native Engineering</a>
+  <a href="index.html" class="active">Hub</a>
+  <a href="artifacts/ai_native_philosophy.html">Philosophy</a>
+  <a href="artifacts/ai_native_workflow.html">Workflow</a>
+  <a href="artifacts/ai_native_best_practices.html">Practices</a>
+  <a href="artifacts/cursor_invocation_graph.html">Invocation Graph</a>
+  <a href="artifacts/cursor_harness.html">Harness</a>
+  <a href="artifacts/skill_creator_workflow.html">Skill Creator</a>
+  <a href="comparison.html">CC vs Cursor</a>
+  <a href="plugins.html">SP vs CE</a>
+  <a href="migration.html">CE Migration</a>
+</nav>
+
+<div class="container">
+
+  <div class="page-header">
+    <div class="eyebrow">Reference library</div>
+    <h1>AI-Native <span>Engineering</span></h1>
+    <p class="subtitle">Methodology, architecture, tool comparisons, and migration guides for AI-native development workflows.</p>
+  </div>
+
+  <!-- Group 1: AI-Native Methodology -->
+  <div class="group-label group-methodology">AI-Native Methodology</div>
+  <div class="card-grid">
+    <a class="card" href="artifacts/ai_native_philosophy.html">
+      <span class="card-tag tag-artifact">interactive</span>
+      <div class="card-title">AI-Native Philosophy</div>
+      <div class="card-desc">6 foundational principles — constraints enforced structurally, not through willpower. Plan first, TDD, systematic process, simplicity, evidence, compound knowledge.</div>
+    </a>
+    <a class="card" href="artifacts/ai_native_workflow.html">
+      <span class="card-tag tag-artifact">interactive</span>
+      <div class="card-title">AI-Native Workflow</div>
+      <div class="card-desc">6-stage development lifecycle: brainstorm, plan, work, TDD loop, code review, compound lessons. Steps 4 &amp; 5 run continuously during step 3.</div>
+    </a>
+  </div>
+  <div class="card-grid single">
+    <a class="card" href="artifacts/ai_native_best_practices.html">
+      <span class="card-tag tag-artifact">interactive</span>
+      <div class="card-title">AI-Native Best Practices</div>
+      <div class="card-desc">19 daily practices across 6 categories — context management, model selection, agent mindset, project hygiene, security, and tooling.</div>
+    </a>
+  </div>
+
+  <!-- Group 2: Architecture & Internals -->
+  <div class="group-label group-architecture">Architecture &amp; Internals</div>
+  <div class="card-grid">
+    <a class="card" href="artifacts/cursor_invocation_graph.html">
+      <span class="card-tag tag-artifact">interactive</span>
+      <div class="card-title">Cursor Invocation Graph</div>
+      <div class="card-desc">Who calls what: agent as central orchestrator invoking commands, loading skills, spawning subagents. Shows recursive spawning constraints.</div>
+    </a>
+    <a class="card" href="artifacts/cursor_harness.html">
+      <span class="card-tag tag-artifact">interactive</span>
+      <div class="card-title">Cursor Harness Architecture</div>
+      <div class="card-desc">IDE startup sequence, rules precedence, trigger types, commands, skills, subagents, chat modes, context window assembly, MCP servers.</div>
+    </a>
+  </div>
+  <div class="card-grid single">
+    <a class="card" href="artifacts/skill_creator_workflow.html">
+      <span class="card-tag tag-artifact">interactive</span>
+      <div class="card-title">Skill Creator Workflow</div>
+      <div class="card-desc">How to create, structure, and manage reusable skills — the building blocks of AI-native workflows.</div>
+    </a>
+  </div>
+
+  <!-- Group 3: Tool Comparisons -->
+  <div class="group-label group-comparisons">Tool Comparisons</div>
+  <div class="card-grid">
+    <a class="card" href="comparison.html">
+      <span class="card-tag tag-new">dashboard</span>
+      <div class="card-title">Claude Code vs Cursor</div>
+      <div class="card-desc">Side-by-side component comparison — skills, memory, subagents, hooks, plugins, rules scopes, MCP. Cursor 2.4+ vs Claude Code 2.1.x.</div>
+    </a>
+    <a class="card" href="plugins.html">
+      <span class="card-tag tag-new">dashboard</span>
+      <div class="card-title">Superpowers vs Compound Engineering</div>
+      <div class="card-desc">Portability analysis — which plugin is easier to move from Claude Code to Cursor? Skill-by-skill compatibility, installation comparison.</div>
+    </a>
+  </div>
+
+  <!-- Group 4: Migration & Setup -->
+  <div class="group-label group-migration">Migration &amp; Setup</div>
+  <div class="card-grid single">
+    <a class="card" href="migration.html">
+      <span class="card-tag tag-new">guide</span>
+      <div class="card-title">CE &rarr; Cursor Migration Guide</div>
+      <div class="card-desc">One-time symlink bridge setup to get all 35 Compound Engineering agents working in Cursor. Step-by-step with troubleshooting.</div>
+    </a>
+  </div>
+
+  <footer>
+    AI-Native Engineering &middot; April 2026 &middot; Built for the AI-native development community
+  </footer>
+
+</div>
+</body>
+</html>

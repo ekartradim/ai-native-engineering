@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CE → Cursor Migration Guide — AI-Native Engineering</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">AI-Native Engineering</a>
+  <a href="index.html">Hub</a>
+  <a href="artifacts/ai_native_philosophy.html">Philosophy</a>
+  <a href="artifacts/ai_native_workflow.html">Workflow</a>
+  <a href="artifacts/ai_native_best_practices.html">Practices</a>
+  <a href="artifacts/cursor_invocation_graph.html">Invocation Graph</a>
+  <a href="artifacts/cursor_harness.html">Harness</a>
+  <a href="artifacts/skill_creator_workflow.html">Skill Creator</a>
+  <a href="comparison.html">CC vs Cursor</a>
+  <a href="plugins.html">SP vs CE</a>
+  <a href="migration.html" class="active">CE Migration</a>
+</nav>
+
+<div class="container">
+
+  <div class="page-header">
+    <div class="eyebrow">Migration Guide</div>
+    <h1>Compound Engineering <span>&rarr; Cursor</span></h1>
+    <p class="subtitle">Using the CE plugin with Cursor IDE. One-time setup to get all 35 specialist agents working. Tested April 2026 — Cursor 2.4+, CE 2.52.0.</p>
+  </div>
+
+  <div class="callout">
+    <strong>The problem in one sentence:</strong> CE skills load automatically in Cursor. The problem is <strong>agent dispatch</strong>: CE skills call agents using namespace syntax (<code>compound-engineering:research:repo-research-analyst</code>) that Cursor's Task tool rejects. The fix is a one-time symlink bridge.
+  </div>
+
+  <div class="callout tip">
+    <strong>CE skills are Claude Code native.</strong> This guide helps Cursor users get the same capabilities by bridging the gap between Claude Code's namespace-aware agent dispatch and Cursor's flat-file resolver.
+  </div>
+
+  <h2>Setup</h2>
+
+  <h3>Step 1 — Get CE skills visible in Cursor</h3>
+  <p>CE is a <strong>Claude Code plugin</strong> — it installs into <code>~/.claude/</code>. Cursor picks up skills from <code>~/.claude/</code> automatically as a fallback, so if CE is already installed for Claude Code, your skills are already available.</p>
+
+  <p><strong>Check if CE is installed:</strong></p>
+  <pre><code>ls ~/.claude/plugins/cache/local-curated/compound-engineering/
+# Should show a version folder, e.g. 2.52.0</code></pre>
+
+  <p>If the folder exists, skip to Step 2.</p>
+
+  <p><strong>If CE is not installed yet:</strong></p>
+  <pre><code>bunx @every-env/compound-plugin install compound-engineering --to cursor</code></pre>
+
+  <h3>Step 2 — Symlink bridge</h3>
+  <pre><code>CE_AGENTS=~/.claude/plugins/cache/local-curated/compound-engineering/2.52.0/agents
+TARGET=~/.cursor/agents
+
+mkdir -p "$TARGET"
+
+for f in "$CE_AGENTS"/research/*.md \
+          "$CE_AGENTS"/review/*.md \
+          "$CE_AGENTS"/workflow/*.md \
+          "$CE_AGENTS"/document-review/*.md \
+          "$CE_AGENTS"/design/*.md; do
+  name=$(basename "$f")
+  dest="$TARGET/$name"
+  if [ ! -e "$dest" ]; then
+    ln -s "$f" "$dest"
+    echo "linked: $name"
+  fi
+done</code></pre>
+
+  <p>Symlinks (not copies) — no duplication, one source of truth. When CE upgrades, update the version in <code>CE_AGENTS</code> and re-run.</p>
+
+  <h3>Step 3 — Verify</h3>
+  <p>In Cursor chat, type <code>/ce-namespace-test</code>. This skill runs two live checks:</p>
+  <ol>
+    <li>Invokes <code>simple-analyzer</code> on a JS snippet — basic dispatch works</li>
+    <li>Invokes <code>simple-analyzer</code> + <code>correctness-reviewer</code> + <code>security-reviewer</code> <strong>in parallel</strong> — bridge active, parallel dispatch works</li>
+  </ol>
+  <p>All three should fire simultaneously. If a CE agent is missing, re-run Step 2.</p>
+
+  <h2>What Works After Setup</h2>
+  <table>
+    <tr><th>Skill</th><th>Status</th><th>Notes</th></tr>
+    <tr><td><code>ce-brainstorm</code></td><td>Full</td><td>No agent dispatch needed</td></tr>
+    <tr><td><code>ce-plan</code></td><td>With bridge</td><td>Research agents dispatched via natural language</td></tr>
+    <tr><td><code>ce-work</code></td><td>With bridge</td><td>Units executed inline, no nested subagents</td></tr>
+    <tr><td><code>ce-review</code></td><td>With bridge</td><td>Persona agents run in parallel</td></tr>
+    <tr><td><code>document-review</code></td><td>With bridge</td><td>Same as ce-review</td></tr>
+    <tr><td><code>deepen-plan</code></td><td>With bridge</td><td>Research agents dispatched via natural language</td></tr>
+    <tr><td><code>frontend-design</code></td><td>Full</td><td>No agent dispatch needed</td></tr>
+    <tr><td><code>feature-video</code></td><td>Full</td><td>No agent dispatch needed</td></tr>
+    <tr><td><code>agent-browser</code></td><td>Full</td><td>MCP integration, no agents</td></tr>
+  </table>
+
+  <p><strong>What you lose vs Claude Code:</strong> namespace dispatch for plugin agents, and multi-hop tooling guarantees (neither product supports subagent &rarr; subagent chains as a stable primitive).</p>
+
+  <h2>Troubleshooting</h2>
+
+  <details>
+    <summary>CE agent missing after /ce-namespace-test</summary>
+    <p>Re-run the symlink script. If CE was upgraded, update the version string in <code>CE_AGENTS</code>.</p>
+  </details>
+
+  <details>
+    <summary>Skill not found (/ce-plan, etc.)</summary>
+    <p>Restart Cursor, then check <code>~/.cursor/skills/</code> for CE skill folders. Re-run Step 1 if missing.</p>
+  </details>
+
+  <details>
+    <summary>Skill appears twice in / picker</summary>
+    <p>Duplicate <code>name:</code> across <code>~/.cursor/skills/</code> and <code>~/.claude/skills/</code>. Remove the <code>~/.claude/</code> copy. Rule: one skill = one folder = one <code>name:</code>.</p>
+  </details>
+
+  <details>
+    <summary>MCP tool errors / degraded accuracy</summary>
+    <p>Cursor degrades above ~40 active MCP tools. Disable unused servers in <code>~/.cursor/mcp.json</code>.</p>
+  </details>
+
+  <h2>How It Works</h2>
+
+  <h3>Loading Order</h3>
+  <p>Cursor scans multiple directories at startup. <code>.cursor/</code> always wins over <code>.claude/</code> when the same name appears.</p>
+  <table>
+    <tr><th>Type</th><th>Priority 1 (wins)</th><th>Priority 2 (fallback)</th></tr>
+    <tr><td><strong>User agents</strong></td><td><code>~/.cursor/agents/</code></td><td><code>~/.claude/agents/</code></td></tr>
+    <tr><td><strong>User skills</strong></td><td><code>~/.cursor/skills/</code></td><td><code>~/.claude/skills/</code></td></tr>
+    <tr><td><strong>Project agents</strong></td><td><code>.cursor/agents/</code></td><td><code>.claude/agents/</code></td></tr>
+    <tr><td><strong>Project skills</strong></td><td><code>.cursor/skills/</code></td><td><code>.claude/skills/</code></td></tr>
+    <tr><td><strong>Hooks</strong></td><td><code>~/.cursor/hooks.json</code></td><td><code>~/.claude/hooks.json</code></td></tr>
+  </table>
+
+  <h3>Why Namespace Syntax Fails</h3>
+  <p>CE skills dispatch agents like:</p>
+  <pre><code>Task compound-engineering:research:repo-research-analyst(...)</code></pre>
+  <p>In <strong>Claude Code</strong>, this resolves via a namespace registry. In <strong>Cursor</strong>, the Task tool only accepts built-in subagents plus plain-named custom agents. Namespace strings are rejected at validation.</p>
+  <p>The symlink bridge fixes this by giving all CE agents plain filenames in <code>~/.cursor/agents/</code>.</p>
+
+  <h3>Parallel Dispatch</h3>
+  <p>CE skills in Claude Code emit multiple Task calls in one message — they run in parallel. In Cursor, the agent defaults to sequential unless told otherwise. This matters: <code>ce-review</code> with 6 persona reviewers takes ~2 min in parallel vs ~12 min sequential.</p>
+  <div class="callout tip">
+    <strong>Parallel phrasing pattern:</strong> Use "Invoke the following subagents IN PARALLEL in a single message — do not wait for one to finish before starting the next." Avoid words like "then", "next", "after" which signal serial execution.
+  </div>
+
+  <h2>What Gets Symlinked (35 agents)</h2>
+  <table>
+    <tr><th>Group</th><th>Agents</th></tr>
+    <tr><td><strong>research/</strong></td><td><code>best-practices-researcher</code>, <code>framework-docs-researcher</code>, <code>git-history-analyzer</code>, <code>learnings-researcher</code>, <code>repo-research-analyst</code></td></tr>
+    <tr><td><strong>review/</strong></td><td><code>agent-native-reviewer</code>, <code>api-contract-reviewer</code>, <code>architecture-strategist</code>, <code>code-simplicity-reviewer</code>, <code>correctness-reviewer</code>, <code>data-integrity-guardian</code>, <code>data-migration-expert</code>, <code>data-migrations-reviewer</code>, <code>deployment-verification-agent</code>, <code>julik-frontend-races-reviewer</code>, <code>kieran-python-reviewer</code>, <code>kieran-typescript-reviewer</code>, <code>maintainability-reviewer</code>, <code>pattern-recognition-specialist</code>, <code>performance-oracle</code>, <code>performance-reviewer</code>, <code>reliability-reviewer</code>, <code>schema-drift-detector</code>, <code>security-reviewer</code>, <code>security-sentinel</code>, <code>testing-reviewer</code></td></tr>
+    <tr><td><strong>workflow/</strong></td><td><code>bug-reproduction-validator</code>, <code>lint</code>, <code>pr-comment-resolver</code>, <code>spec-flow-analyzer</code></td></tr>
+    <tr><td><strong>document-review/</strong></td><td><code>coherence-reviewer</code>, <code>feasibility-reviewer</code></td></tr>
+    <tr><td><strong>design/</strong></td><td><code>design-implementation-reviewer</code>, <code>design-iterator</code>, <code>figma-design-sync</code></td></tr>
+  </table>
+
+  <footer>
+    <a href="https://cursor.com/docs/context/subagents">Cursor Subagents docs</a> &middot;
+    <a href="https://cursor.com/docs/context/skills">Cursor Skills docs</a> &middot;
+    <a href="comparison.html">Cursor vs Claude Code comparison</a> &middot;
+    <a href="index.html">Back to hub</a>
+  </footer>
+
+</div>
+</body>
+</html>

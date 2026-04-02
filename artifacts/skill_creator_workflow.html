@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Creator Workflow</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0b;
+    --surface: #141412;
+    --border: #2a2a26;
+    --border-bright: #3d3d38;
+    --text-primary: #e8e6df;
+    --text-secondary: #a09a8c;
+    --text-dim: #706b60;
+    --accent: #c8b97a;
+    --accent-dim: #7a6f43;
+    --teal: #5dbca0;
+    --teal-dim: #2d6b5a;
+    --red: #c8604a;
+    --red-dim: #6b2d20;
+    --orange: #e8a05a;
+    --orange-dim: #6b4420;
+    --blue: #a0c8d4;
+    --blue-dim: #1d4a56;
+    --purple: #8b7fd4;
+    --purple-dim: #3d3870;
+    --green: #7ab87a;
+    --green-dim: #2d5a2d;
+    --pink: #d48ba0;
+    --pink-dim: #6b2d42;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 48px 32px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    margin-bottom: 48px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .header-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* ── SECTION LABELS ── */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 40px 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 30px;
+    top: 24px;
+    bottom: 24px;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--border-bright) 8%, var(--border-bright) 92%, transparent);
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    position: relative;
+    opacity: 0;
+    transform: translateY(14px);
+    animation: fadeUp 0.45s ease forwards;
+  }
+
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+  .step:nth-child(1)  { animation-delay: 0.04s; }
+  .step:nth-child(2)  { animation-delay: 0.09s; }
+  .step:nth-child(3)  { animation-delay: 0.14s; }
+  .step:nth-child(4)  { animation-delay: 0.19s; }
+  .step:nth-child(5)  { animation-delay: 0.24s; }
+  .step:nth-child(6)  { animation-delay: 0.29s; }
+  .step:nth-child(7)  { animation-delay: 0.34s; }
+  .step:nth-child(8)  { animation-delay: 0.39s; }
+  .step:nth-child(9)  { animation-delay: 0.44s; }
+  .step:nth-child(10) { animation-delay: 0.49s; }
+  .step:nth-child(11) { animation-delay: 0.54s; }
+
+  .node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .node-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--border-bright);
+    background: var(--bg);
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .step:hover .node-dot {
+    box-shadow: 0 0 10px rgba(200,185,122,0.5);
+  }
+
+  .node-line {
+    width: 1px;
+    flex: 1;
+    background: var(--border);
+    margin-top: 8px;
+    min-height: 24px;
+  }
+
+  .step:last-child .node-line { display: none; }
+
+  /* loop indicator on node */
+  .node-loop {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: var(--accent-dim);
+    margin-top: 4px;
+  }
+
+  .card {
+    margin: 10px 0 10px 20px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: var(--surface);
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: default;
+  }
+
+  .card:hover {
+    border-color: var(--border-bright);
+    box-shadow: 0 4px 28px rgba(0,0,0,0.45);
+  }
+
+  .card-header {
+    padding: 16px 20px 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .step-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    min-width: 22px;
+  }
+
+  .card-title {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    flex: 1;
+  }
+
+  .badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
+
+  .card-body {
+    padding: 12px 20px 16px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .col { flex: 1; min-width: 160px; }
+
+  .col-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 7px;
+  }
+
+  .items { display: flex; flex-direction: column; gap: 4px; }
+
+  .item {
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    line-height: 1.4;
+  }
+
+  .item::before {
+    content: '—';
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 1px 6px;
+    border: 1px solid var(--border-bright);
+    border-radius: 1px;
+    color: var(--text-secondary);
+    display: inline-block;
+    margin: 2px 2px 0 0;
+  }
+
+  .subagent-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 1px;
+    background: rgba(93,188,160,0.1);
+    border: 1px solid var(--teal-dim);
+    color: var(--teal);
+    display: inline-block;
+    margin: 2px 2px 0 0;
+  }
+
+  /* ── COLOR SCHEMES ── */
+  /* p1 teal */
+  .p1 .node-dot { border-color: var(--teal); }
+  .p1 .card:hover { border-color: var(--teal-dim); }
+  .p1 .card-title { color: var(--teal); }
+  .p1 .badge { background: var(--teal-dim); color: var(--teal); }
+
+  /* p2 accent */
+  .p2 .node-dot { border-color: var(--accent); }
+  .p2 .card:hover { border-color: var(--accent-dim); }
+  .p2 .card-title { color: var(--accent); }
+  .p2 .badge { background: var(--accent-dim); color: var(--accent); }
+
+  /* p3 accent */
+  .p3 .node-dot { border-color: var(--accent); }
+  .p3 .card:hover { border-color: var(--accent-dim); }
+  .p3 .card-title { color: var(--accent); }
+  .p3 .badge { background: var(--accent-dim); color: var(--accent); }
+
+  /* p4 orange */
+  .p4 .node-dot { border-color: var(--orange); }
+  .p4 .card:hover { border-color: var(--orange-dim); }
+  .p4 .card-title { color: var(--orange); }
+  .p4 .badge { background: var(--orange-dim); color: var(--orange); }
+
+  /* p5 blue */
+  .p5 .node-dot { border-color: var(--blue); }
+  .p5 .card:hover { border-color: var(--blue-dim); }
+  .p5 .card-title { color: var(--blue); }
+  .p5 .badge { background: var(--blue-dim); color: var(--blue); }
+
+  /* p6 blue */
+  .p6 .node-dot { border-color: var(--blue); }
+  .p6 .card:hover { border-color: var(--blue-dim); }
+  .p6 .card-title { color: var(--blue); }
+  .p6 .badge { background: var(--blue-dim); color: var(--blue); }
+
+  /* p7 purple */
+  .p7 .node-dot { border-color: var(--purple); }
+  .p7 .card:hover { border-color: var(--purple-dim); }
+  .p7 .card-title { color: var(--purple); }
+  .p7 .badge { background: var(--purple-dim); color: var(--purple); }
+
+  /* p8 red */
+  .p8 .node-dot { border-color: var(--red); }
+  .p8 .card:hover { border-color: var(--red-dim); }
+  .p8 .card-title { color: var(--red); }
+  .p8 .badge { background: var(--red-dim); color: var(--red); }
+
+  /* p9 green (loop) */
+  .p9 .node-dot { border-color: var(--green); }
+  .p9 .card:hover { border-color: var(--green-dim); }
+  .p9 .card-title { color: var(--green); }
+  .p9 .badge { background: var(--green-dim); color: var(--green); }
+  .p9 .card { border-style: dashed; }
+
+  /* p10 pink */
+  .p10 .node-dot { border-color: var(--pink); }
+  .p10 .card:hover { border-color: var(--pink-dim); }
+  .p10 .card-title { color: var(--pink); }
+  .p10 .badge { background: var(--pink-dim); color: var(--pink); }
+
+  /* p11 teal (package) */
+  .p11 .node-dot { border-color: var(--teal); }
+  .p11 .card:hover { border-color: var(--teal-dim); }
+  .p11 .card-title { color: var(--teal); }
+  .p11 .badge { background: var(--teal-dim); color: var(--teal); }
+
+  /* ── LOOP ANNOTATION ── */
+  .loop-bracket {
+    margin: 4px 0 4px 80px;
+    border-left: 2px dashed var(--green-dim);
+    border-bottom: 2px dashed var(--green-dim);
+    border-radius: 0 0 0 4px;
+    padding: 6px 0 6px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .loop-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--green-dim);
+    letter-spacing: 0.1em;
+  }
+
+  .loop-arrow {
+    font-size: 16px;
+    color: var(--green-dim);
+  }
+
+  /* ── PLATFORM TABLE ── */
+  .platform-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .platform-table th {
+    text-align: left;
+    color: var(--text-dim);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    font-size: 10px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    padding: 6px 12px 6px 0;
+  }
+
+  .platform-table td {
+    padding: 7px 12px 7px 0;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .platform-table td:first-child {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .yes { color: var(--teal) !important; }
+  .no { color: var(--red-dim) !important; }
+  .maybe { color: var(--accent) !important; }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .footer-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+
+  .file-tree {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.9;
+  }
+
+  .file-tree .hl { color: var(--accent); }
+
+  /* Nav */
+  .hub-nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 32px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; position: sticky; top: 0; z-index: 100; margin: -48px -32px 48px; }
+  .hub-nav a { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-secondary); text-decoration: none; letter-spacing: 0.04em; }
+  .hub-nav a:hover { color: var(--text-primary); }
+  .hub-nav .nav-brand { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: var(--accent); }
+</style>
+</head>
+<body>
+<nav class="hub-nav">
+  <a href="../index.html" class="nav-brand">AI-Native Engineering</a>
+  <a href="../index.html">Hub</a>
+  <a href="ai_native_philosophy.html">Philosophy</a>
+  <a href="ai_native_workflow.html">Workflow</a>
+  <a href="ai_native_best_practices.html">Practices</a>
+  <a href="cursor_invocation_graph.html">Invocation Graph</a>
+  <a href="cursor_harness.html">Harness</a>
+  <a href="skill_creator_workflow.html" class="active">Skill Creator</a>
+  <a href="../comparison.html">CC vs Cursor</a>
+  <a href="../plugins.html">SP vs CE</a>
+  <a href="../migration.html">CE Migration</a>
+</nav>
+<div class="container">
+
+  <header>
+    <div>
+      <div class="eyebrow">anthropics/skills · skill-creator</div>
+      <h1>Skill <span>Creator</span></h1>
+    </div>
+    <div class="header-meta">
+      11 phases<br>
+      looping eval cycle<br>
+      subagent-driven
+    </div>
+  </header>
+
+  <!-- ══ PHASE 1-3: UNDERSTAND + DRAFT ══ -->
+  <div class="section-label">Phase 1–3 · understand &amp; draft</div>
+
+  <div class="timeline">
+
+    <div class="step p1">
+      <div class="node"><div class="node-dot"></div><div class="node-line"></div></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="step-num">01</div>
+          <div class="card-title">Capture intent</div>
+          <div class="badge">entry point</div>
+        </div>
+        <div class="card-body">
+          <div class="col">
+            <div class="col-label">Four questions answered first</div>
+            <div class="items">
+              <div class="item">What should this skill enable Claude to do?</div>
+              <div class="item">When should it trigger? → drives description</div>
+              <div class="item">What is the expected output format?</div>
+              <div class="item">Should test cases be set up?</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="col-label">Smart entry detection</div>
+            <div class="items">
+              <div class="item">Detects where in the loop the user already is</div>
+              <div class="item">Extracts steps from conversation history if workflow already happened</div>
+              <div class="item">Evals recommended for objective outputs; skipped for subjective (style, design)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step p2">
+      <div class="node"><div class="node-dot"></div><div class="node-line"></div></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="step-num">02</div>
+          <div class="card-title">Interview &amp; research</div>
+          <div class="badge">gather</div>
+        </div>
+        <div class="card-body">
+          <div class="col">
+            <div class="col-label">Questions asked</div>
+            <div class="items">
+              <div class="item">Edge cases and failure modes</div>
+              <div class="item">Input / output formats and example files</div>
+              <div class="item">Success criteria and dependencies</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="col-label">Parallel research (if MCPs available)</div>
+            <div class="items">
+              <div class="item"><span class="subagent-pill">subagents</span> invoked in parallel for docs + similar skills</div>
+              <div class="item">Test prompts not written until interview complete</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step p3">
+      <div class="node"><div class="node-dot"></div><div class="node-line"></div></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="step-num">03</div>
+          <div class="card-title">Write SKILL.md</div>
+          <div class="badge">draft</div>
+        </div>
+        <div class="card-body">
+          <div class="col">
+            <div class="col-label">Frontmatter fields</div>
+            <div class="items">
+              <div class="item"><span class="tag">name</span> kebab-case, max 64 chars</div>
+              <div class="item"><span class="tag">description</span> primary trigger — write assertively, combat undertriggering</div>
+              <div class="item"><span class="tag">compatibility</span> required tools (optional, rare)</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="col-label">Directory structure</div>
+            <div class="items">
+              <div class="item"><span class="tag">SKILL.md</span> body &lt;500 lines; load on trigger</div>
+              <div class="item"><span class="tag">scripts/</span> executable code; deterministic tasks</div>
+              <div class="item"><span class="tag">references/</span> docs loaded into context on demand</div>
+              <div class="item"><span class="tag">assets/</span> templates, fonts, icons used in output</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end timeline 1-3 -->
+
+  <!-- ══ PHASE 4-8: EVAL RUN ══ -->
+  <div class="section-label">Phase 4–8 · evaluation run · one continuous sequence</div>
+
+  <div class="timeline">
+
+    <div class="step p4">
+      <div class="node"><div class="node-dot"></div><div class="node-line"></div></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="step-num">04</div>
+          <div class="card-title">Write test cases</div>
+          <div class="badge">evals</div>
+        </div>
+        <div class="card-body">
+          <div class="col">
+            <div class="col-label">Process</div>
+            <div class="items">
+              <div class="item">2–3 realistic user prompts drafted and reviewed with user</div>
+              <div class="item">Saved to <span class="tag">evals/evals.json</span></div>
+              <div class="item">Assertions left EMPTY at this stage — written during runs</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="col-label">Query design rules</div>
+            <div class="items">
+              <div class="item">Realistic, not sanitised — write how a real user would phrase it</div>
+              <div class="item">Complex enough that a skill would genuinely help</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step p5">
+      <div class="node"><div class="node-dot"></div><div class="node-line"></div></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="step-num">05</div>
+          <div class="card-title">Run parallel evaluations</div>
+          <div class="badge">execute</div>
+        </div>
+        <div class="card-body">
+          <div class="col">
+            <div class="col-label">Parallel subagent pairs per test case</div>
+            <div class="items">
+              <div class="item"><span class="subagent-pill">with_skill</span> receives SKILL.md + eval prompt + input files</div>
+              <div class="item"><span class="subagent-pill">without_skill</span> baseline — no skill provided (new skill) <em>or</em></div>
+              <div class="item"><span class="subagent-pill">old_skill</span> baseline — prior version snapshot (iteration)</div>
+              <div class="item">Both spawned in same turn so they finish simultaneously</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="col-label">Workspace layout</div>
+            <div class="items">
+              <div class="item"><span class="tag">iteration-N/eval-ID/with_skill/</span></div>
+              <div class="item"><span class="tag">iteration-N/eval-ID/without_skill/</span></div>
+              <div class="item"><span class="tag">eval_metadata.json</span> written per eval dir</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step p6">
+      <div class="node"><div class="node-dot"></div><div class="node-line"></div></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="step-num">06</div>
+          <div class="card-title">Draft assertions (while runs in progress)</div>
+          <div class="badge">concurrent</div>
+        </div>
+        <div class="card-body">
+          <div class="col">
+            <div class="col-label">Good assertions are</div>
+            <div class="items">
+              <div class="item">Objectively verifiable — no human judgment required</div>
+              <div class="item">Descriptively named — readable as-is in viewer</div>
+              <div class="item">Scripted where possible (faster, reusable, reliable)</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="col-label">Skip assertions for</div>
+            <div class="items">
+              <div class="item">Subjective output skills — writing style, design quality</div>
+              <div class="item">Results saved back into <span class="tag">evals/evals.json</span> before runs finish</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step p7">
+      <div class="node"><div class="node-dot"></div><div class="node-line"></div></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="step-num">07</div>
+          <div class="card-title">Capture timing data</div>
+          <div class="badge">ephemeral</div>
+        </div>
+        <div class="card-body">
+          <div class="col">
+            <div class="col-label">On subagent completion</div>
+            <div class="items">
+              <div class="item">Notification arrives with <span class="tag">total_tokens</span> and <span class="tag">duration_ms</span></div>
+              <div class="item">Written immediately to <span class="tag">timing.json</span> in run dir</div>
+              <div class="item">Not persisted elsewhere — cannot be recovered after the fact</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step p8">
+      <div class="node"><div class="node-dot"></div><div class="node-line"></div></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="step-num">08</div>
+          <div class="card-title">Grade → aggregate → analyse → launch viewer</div>
+          <div class="badge">pipeline</div>
+        </div>
+        <div class="card-body">
+          <div class="col">
+            <div class="col-label">Four sequential steps (no stopping)</div>
+            <div class="items">
+              <div class="item"><strong style="color:var(--text-primary)">8a Grade</strong> — <span class="subagent-pill">grader subagent</span> reads agents/grader.md; writes grading.json; fields: text, passed, evidence</div>
+              <div class="item"><strong style="color:var(--text-primary)">8b Aggregate</strong> — <span class="tag">aggregate_benchmark.py</span> → benchmark.json + benchmark.md; pass_rate, time, tokens, mean ± stddev, delta</div>
+              <div class="item"><strong style="color:var(--text-primary)">8c Analyse</strong> — <span class="subagent-pill">analyzer subagent</span> surfaces: non-discriminating assertions, flaky evals, time/token tradeoffs</div>
+              <div class="item"><strong style="color:var(--text-primary)">8d View</strong> — <span class="tag">generate_review.py</span> launches eval viewer; add --previous-workspace on iteration 2+</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="col-label">Viewer tabs</div>
+            <div class="items">
+              <div class="item">Outputs — prompt, rendered output, prev iteration (collapsed), grades (collapsed), feedback textbox</div>
+              <div class="item">Benchmark — pass rates, timing, token usage, per-eval breakdown, analyst observations</div>
+              <div class="item">Submit All Reviews → saves feedback.json</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end timeline 4-8 -->
+
+  <!-- ══ PHASE 9: LOOP ══ -->
+  <div class="section-label">Phase 9 · feedback loop · repeats until satisfied</div>
+
+  <div class="timeline">
+    <div class="step p9">
+      <div class="node"><div class="node-dot"></div><div class="node-line"></div><div class="node-loop">↻</div></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="step-num">09</div>
+          <div class="card-title">Read feedback &amp; improve</div>
+          <div class="badge">iterate</div>
+        </div>
+        <div class="card-body">
+          <div class="col">
+            <div class="col-label">Improvement principles</div>
+            <div class="items">
+              <div class="item">Generalise — edits must work across many prompts, not just tested examples</div>
+              <div class="item">Keep lean — remove instructions producing unproductive behavior</div>
+              <div class="item">Explain why — reasoning beats rigid ALWAYS/NEVER directives</div>
+              <div class="item">Bundle repeated work — common helper scripts go into scripts/</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="col-label">After improvement</div>
+            <div class="items">
+              <div class="item">Apply changes to SKILL.md</div>
+              <div class="item">Rerun all cases into iteration-N+1/ (including baseline)</div>
+              <div class="item">Launch viewer with --previous-workspace</div>
+              <div class="item">Loop terminates when: user satisfied, feedback all empty, or no meaningful progress</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loop-bracket">
+    <div class="loop-arrow">↖</div>
+    <div class="loop-label">returns to phase 05 — reruns all test cases into new iteration directory</div>
+  </div>
+
+  <!-- ══ PHASE 10-11: FINALISE ══ -->
+  <div class="section-label">Phase 10–11 · finalise &amp; ship</div>
+
+  <div class="timeline">
+
+    <div class="step p10">
+      <div class="node"><div class="node-dot"></div><div class="node-line"></div></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="step-num">10</div>
+          <div class="card-title">Description optimisation</div>
+          <div class="badge">optional · recommended</div>
+        </div>
+        <div class="card-body">
+          <div class="col">
+            <div class="col-label">Trigger eval design</div>
+            <div class="items">
+              <div class="item">8–10 queries that SHOULD trigger — varied phrasings, implicit use cases</div>
+              <div class="item">8–10 queries that SHOULD NOT — near-misses, adjacent domains, shared keywords</div>
+              <div class="item">Select best_description by held-out test score (not training score) — avoids overfitting</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="col-label">What makes a good test query</div>
+            <div class="items">
+              <div class="item">Realistic and messy — "my boss sent me this xlsx file called Q4 sales final FINAL v2.xlsx"</div>
+              <div class="item">NOT sanitised — "Extract text from PDF" is too simple; Claude handles without skill</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step p11">
+      <div class="node"><div class="node-dot"></div><div class="node-line"></div></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="step-num">11</div>
+          <div class="card-title">Package &amp; ship</div>
+          <div class="badge">done</div>
+        </div>
+        <div class="card-body">
+          <div class="col">
+            <div class="col-label">Packaging</div>
+            <div class="items">
+              <div class="item"><span class="tag">package_skill.py &lt;skill-dir&gt;</span> validates first, then zips</div>
+              <div class="item">Produces <span class="tag">skill-name.skill</span> — ready to install</div>
+              <div class="item">Validation errors block packaging — fix and rerun</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="col-label">Blind comparison (optional)</div>
+            <div class="items">
+              <div class="item">comparator + analyzer agents judge two versions without knowing which is which</div>
+              <div class="item">Used when "is the new version actually better?" needs a rigorous answer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end timeline 10-11 -->
+
+  <!-- ══ PLATFORM TABLE ══ -->
+  <div class="section-label">Platform variations</div>
+  <table class="platform-table">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>Claude Code</th>
+        <th>Claude.ai</th>
+        <th>Cowork</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Parallel subagents</td>
+        <td class="yes">✓</td>
+        <td class="no">✗ — runs inline, less rigorous</td>
+        <td class="maybe">✓ (serial fallback on timeout)</td>
+      </tr>
+      <tr>
+        <td>Baseline comparison runs</td>
+        <td class="yes">✓</td>
+        <td class="no">✗ — skipped</td>
+        <td class="yes">✓</td>
+      </tr>
+      <tr>
+        <td>Eval viewer</td>
+        <td class="yes">✓ browser launch</td>
+        <td class="no">✗ — show results inline</td>
+        <td class="maybe">✓ --static flag → HTML file</td>
+      </tr>
+      <tr>
+        <td>Description optimisation</td>
+        <td class="yes">✓</td>
+        <td class="no">✗ — requires claude -p CLI</td>
+        <td class="yes">✓</td>
+      </tr>
+      <tr>
+        <td>Blind comparison</td>
+        <td class="yes">✓</td>
+        <td class="no">✗</td>
+        <td class="yes">✓</td>
+      </tr>
+      <tr>
+        <td>Skill packaging</td>
+        <td class="yes">✓</td>
+        <td class="yes">✓</td>
+        <td class="yes">✓</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer>
+    <div class="footer-note">
+      Phases 04–08 run as one continuous sequence without stopping.<br>
+      Phase 09 loops back to phase 05 until the user is satisfied.<br>
+      Phase 10 is optional but recommended — combats Claude undertriggering skills.<br>
+      Source: <span style="color:var(--text-secondary)">anthropics/skills · skill-creator/SKILL.md</span>
+    </div>
+    <div class="file-tree">
+      skill-name/<br>
+      ├── <span class="hl">SKILL.md</span>&nbsp;&nbsp;&nbsp;required<br>
+      ├── scripts/&nbsp;&nbsp;&nbsp;deterministic code<br>
+      ├── references/&nbsp;on-demand docs<br>
+      └── assets/&nbsp;&nbsp;&nbsp;&nbsp;output templates
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

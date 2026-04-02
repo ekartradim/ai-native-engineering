@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cursor Invocation Graph</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0d0d0b;
+    font-family: 'DM Mono', monospace, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    padding: 32px 24px;
+    min-height: 100vh;
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #e8e6df;
+    margin-bottom: 4px;
+    letter-spacing: 0.01em;
+  }
+  p.subtitle {
+    font-size: 12px;
+    color: #a09a8c;
+    margin-bottom: 24px;
+  }
+  .card {
+    background: #141412;
+    border-radius: 12px;
+    border: 1px solid #2a2a26;
+    padding: 24px;
+    max-width: 960px;
+    margin: 0 auto;
+    box-shadow: none;
+  }
+  svg text { font-family: 'DM Mono', monospace, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .th { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 500; }
+  .ts { font-size: 12px; font-weight: 400; }
+</style>
+</head>
+<body>
+<nav style="background:#141412;border-bottom:1px solid #2a2a26;padding:12px 32px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;position:sticky;top:0;z-index:100;margin:-32px -24px 32px;">
+  <a href="../index.html" style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:#c8b97a;text-decoration:none;">AI-Native Engineering</a>
+  <a href="../index.html" style="font-family:'DM Mono',monospace;font-size:11px;color:#a09a8c;text-decoration:none;letter-spacing:0.04em;">Hub</a>
+  <a href="ai_native_philosophy.html" style="font-family:'DM Mono',monospace;font-size:11px;color:#a09a8c;text-decoration:none;letter-spacing:0.04em;">Philosophy</a>
+  <a href="ai_native_workflow.html" style="font-family:'DM Mono',monospace;font-size:11px;color:#a09a8c;text-decoration:none;letter-spacing:0.04em;">Workflow</a>
+  <a href="ai_native_best_practices.html" style="font-family:'DM Mono',monospace;font-size:11px;color:#a09a8c;text-decoration:none;letter-spacing:0.04em;">Practices</a>
+  <a href="cursor_invocation_graph.html" style="font-family:'DM Mono',monospace;font-size:11px;color:#c8b97a;text-decoration:none;letter-spacing:0.04em;">Invocation Graph</a>
+  <a href="cursor_harness.html" style="font-family:'DM Mono',monospace;font-size:11px;color:#a09a8c;text-decoration:none;letter-spacing:0.04em;">Harness</a>
+  <a href="skill_creator_workflow.html" style="font-family:'DM Mono',monospace;font-size:11px;color:#a09a8c;text-decoration:none;letter-spacing:0.04em;">Skill Creator</a>
+  <a href="../comparison.html" style="font-family:'DM Mono',monospace;font-size:11px;color:#a09a8c;text-decoration:none;letter-spacing:0.04em;">CC vs Cursor</a>
+  <a href="../plugins.html" style="font-family:'DM Mono',monospace;font-size:11px;color:#a09a8c;text-decoration:none;letter-spacing:0.04em;">SP vs CE</a>
+  <a href="../migration.html" style="font-family:'DM Mono',monospace;font-size:11px;color:#a09a8c;text-decoration:none;letter-spacing:0.04em;">CE Migration</a>
+</nav>
+<div class="card">
+  <h1>Cursor Invocation Graph</h1>
+  <p class="subtitle">Who can call what · updated with subagent recursive capabilities (Composer 1.5+)</p>
+
+<svg width="100%" viewBox="0 0 750 660" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="arr-solid" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="arr-dash" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#888780" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="arr-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<!-- ══ LEGEND ══ -->
+<line x1="40" y1="18" x2="76" y2="18" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arr-solid)"/>
+<text class="ts" x="84" y="23" fill="#a09a8c">direct / programmatic</text>
+<line x1="248" y1="18" x2="284" y2="18" stroke="#888780" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arr-dash)"/>
+<text class="ts" x="292" y="23" fill="#a09a8c">indirect via natural language</text>
+<line x1="488" y1="18" x2="524" y2="18" stroke="#534AB7" stroke-width="1.5" marker-end="url(#arr-purple)"/>
+<text class="ts" x="532" y="23" fill="#8b7fd4">recursive (paid API only)</text>
+
+<!-- ══════════════════════════════════
+     ROW 1 — AGENT
+══════════════════════════════════ -->
+<rect x="228" y="44" width="224" height="72" rx="8" fill="#0d2e22" stroke="#0F6E56" stroke-width="1"/>
+<text class="th" x="340" y="72" text-anchor="middle" fill="#9FE1CB">Agent</text>
+<text class="ts" x="340" y="92" text-anchor="middle" fill="#5dbca0">main orchestrator · any model</text>
+
+<!-- ══════════════════════════════════
+     ROW 2 — COMMANDS / SKILLS / SUBAGENTS
+══════════════════════════════════ -->
+<rect x="32" y="188" width="172" height="80" rx="8" fill="#0d2e22" stroke="#0F6E56" stroke-width="1"/>
+<text class="th" x="118" y="216" text-anchor="middle" fill="#9FE1CB">Commands</text>
+<text class="ts" x="118" y="235" text-anchor="middle" fill="#5dbca0">/cmd · deterministic</text>
+<text class="ts" x="118" y="253" text-anchor="middle" fill="#5dbca0">all steps always run</text>
+
+<rect x="238" y="188" width="204" height="80" rx="8" fill="#0d2e22" stroke="#0F6E56" stroke-width="1"/>
+<text class="th" x="340" y="216" text-anchor="middle" fill="#9FE1CB">Skills</text>
+<text class="ts" x="340" y="235" text-anchor="middle" fill="#5dbca0">SKILL.md · selective</text>
+<text class="ts" x="340" y="253" text-anchor="middle" fill="#5dbca0">agent decides relevance</text>
+
+<rect x="476" y="188" width="172" height="80" rx="8" fill="#0d2e22" stroke="#0F6E56" stroke-width="1"/>
+<text class="th" x="562" y="216" text-anchor="middle" fill="#9FE1CB">Subagents</text>
+<text class="ts" x="562" y="235" text-anchor="middle" fill="#5dbca0">full agent instance</text>
+<text class="ts" x="562" y="253" text-anchor="middle" fill="#5dbca0">isolated context</text>
+
+<!-- ══════════════════════════════════
+     ROW 3 — WHAT SUBAGENTS CAN CALL
+══════════════════════════════════ -->
+<rect x="32" y="380" width="172" height="72" rx="8" fill="#0d2e22" stroke="#1D9E75" stroke-width="0.5"/>
+<text class="th" x="118" y="406" text-anchor="middle" fill="#5dbca0">Commands</text>
+<text class="ts" x="118" y="424" text-anchor="middle" fill="#5dbca0">invoked by subagent</text>
+<text class="ts" x="118" y="441" text-anchor="middle" fill="#5dbca0">same as main agent</text>
+
+<rect x="238" y="380" width="204" height="72" rx="8" fill="#0d2e22" stroke="#1D9E75" stroke-width="0.5"/>
+<text class="th" x="340" y="406" text-anchor="middle" fill="#5dbca0">Skills</text>
+<text class="ts" x="340" y="424" text-anchor="middle" fill="#5dbca0">pulled by subagent</text>
+<text class="ts" x="340" y="441" text-anchor="middle" fill="#5dbca0">via NL instruction</text>
+
+<rect x="476" y="380" width="172" height="72" rx="8" fill="#1e1a38" stroke="#534AB7" stroke-width="1"/>
+<text class="th" x="562" y="406" text-anchor="middle" fill="#b0a8e8">Subagents</text>
+<text class="ts" x="562" y="424" text-anchor="middle" fill="#8b7fd4">recursive spawning</text>
+<text class="ts" x="562" y="441" text-anchor="middle" fill="#8b7fd4">paid API models only</text>
+
+<!-- ══════════════════════════════════
+     ARROWS — Agent → row 2
+══════════════════════════════════ -->
+<path d="M280 116 L118 186" fill="none" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arr-solid)"/>
+<text class="ts" x="176" y="142" text-anchor="middle" fill="#5dbca0">invokes</text>
+
+<line x1="340" y1="116" x2="340" y2="186" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arr-solid)"/>
+<text class="ts" x="360" y="155" text-anchor="start" fill="#5dbca0">reads → loads</text>
+
+<path d="M400 116 L562 186" fill="none" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arr-solid)"/>
+<text class="ts" x="504" y="142" text-anchor="middle" fill="#5dbca0">spawns</text>
+
+<!-- ══════════════════════════════════
+     ARROWS — Skills → Commands / Subagents (indirect NL)
+══════════════════════════════════ -->
+<path d="M238 240 L206 240" fill="none" stroke="#888780" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arr-dash)"/>
+<text class="ts" x="222" y="233" text-anchor="middle" fill="#888780">instruct</text>
+
+<path d="M442 240 L474 240" fill="none" stroke="#888780" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arr-dash)"/>
+<text class="ts" x="458" y="233" text-anchor="middle" fill="#888780">instruct</text>
+
+<!-- ══════════════════════════════════
+     ARROWS — Subagents → row 3
+══════════════════════════════════ -->
+<!-- Subagent → Commands row3 -->
+<path d="M480 268 L204 378" fill="none" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arr-solid)"/>
+
+<!-- Subagent → Skills row3 -->
+<path d="M520 268 L390 378" fill="none" stroke="#888780" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arr-dash)"/>
+
+<!-- Subagent → Subagent recursive -->
+<line x1="562" y1="268" x2="562" y2="378" stroke="#534AB7" stroke-width="1.5" marker-end="url(#arr-purple)"/>
+
+<!-- row3 arrow labels -->
+<text class="ts" x="316" y="310" text-anchor="middle" fill="#5dbca0">invokes</text>
+<text class="ts" x="436" y="325" text-anchor="middle" fill="#888780">instruct</text>
+<text class="ts" x="580" y="326" text-anchor="middle" fill="#8b7fd4">spawns</text>
+
+<!-- ══════════════════════════════════
+     ANNOTATION
+══════════════════════════════════ -->
+<rect x="32" y="474" width="616" height="96" rx="8" fill="#1a1a18" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+<text class="th" x="340" y="499" text-anchor="middle" fill="#e8e6df">Key findings from Cursor docs</text>
+<text class="ts" x="340" y="519" text-anchor="middle" fill="#a09a8c">Subagents are full agent instances — they can invoke commands, pull skills, and spawn further subagents.</text>
+<text class="ts" x="340" y="537" text-anchor="middle" fill="#a09a8c">Recursive subagent spawning requires a paid API model (Composer/auto cannot spawn subagents).</text>
+<text class="ts" x="340" y="555" text-anchor="middle" fill="#a09a8c">Skills instruct via natural language — the agent interprets and acts, making calls non-deterministic but real.</text>
+
+</svg>
+</div>
+</body>
+</html>

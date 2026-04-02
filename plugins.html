@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Superpowers vs Compound Engineering — AI-Native Engineering</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">AI-Native Engineering</a>
+  <a href="index.html">Hub</a>
+  <a href="artifacts/ai_native_philosophy.html">Philosophy</a>
+  <a href="artifacts/ai_native_workflow.html">Workflow</a>
+  <a href="artifacts/ai_native_best_practices.html">Practices</a>
+  <a href="artifacts/cursor_invocation_graph.html">Invocation Graph</a>
+  <a href="artifacts/cursor_harness.html">Harness</a>
+  <a href="artifacts/skill_creator_workflow.html">Skill Creator</a>
+  <a href="comparison.html">CC vs Cursor</a>
+  <a href="plugins.html" class="active">SP vs CE</a>
+  <a href="migration.html">CE Migration</a>
+</nav>
+
+<div class="container">
+
+  <div class="page-header">
+    <div class="eyebrow">Plugin Comparison</div>
+    <h1>Superpowers vs <span>Compound Engineering</span></h1>
+    <p class="subtitle">Cursor portability analysis — which plugin is easier to move from Claude Code to Cursor? Based on Superpowers v5.0.7, CE 2.52.0, Cursor 2.4+, April 2026.</p>
+  </div>
+
+  <h2>What Each Plugin Is</h2>
+  <table>
+    <tr><th></th><th>Superpowers</th><th>Compound Engineering (CE)</th></tr>
+    <tr><td><strong>Core idea</strong></td><td>A development <em>workflow</em> — brainstorm &rarr; plan &rarr; implement &rarr; review &rarr; ship</td><td>A <em>toolbox</em> of specialist agents and skills for any task</td></tr>
+    <tr><td><strong>Skills count</strong></td><td>~15 workflow skills</td><td>~20 skills</td></tr>
+    <tr><td><strong>Agents count</strong></td><td>3 inline subagent roles</td><td>35 named specialist agents</td></tr>
+    <tr><td><strong>Philosophy</strong></td><td>Opinionated end-to-end process (TDD, YAGNI, DRY)</td><td>Composable — use what you need</td></tr>
+    <tr><td><strong>Install</strong></td><td><code>/add-plugin superpowers</code> in Cursor chat</td><td><code>bunx @every-env/compound-plugin install</code> + symlink bridge</td></tr>
+    <tr><td><strong>Target user</strong></td><td>Anyone wanting a structured workflow</td><td>Teams wanting deep specialist review</td></tr>
+  </table>
+
+  <h2>Why Superpowers Is Easier to Port to Cursor</h2>
+
+  <h3>1. Native Cursor support — no bridge required</h3>
+  <p>Superpowers has a Cursor plugin marketplace entry. Install with one command:</p>
+  <pre><code>/add-plugin superpowers</code></pre>
+  <p>CE has no native Cursor plugin. It installs into <code>~/.claude/</code> and needs a manual symlink bridge to make its 35 agents reachable by Cursor's flat-file resolver.</p>
+
+  <h3>2. Skills-first, not agents-first</h3>
+  <p>Most of Superpowers' value lives in <strong>skills</strong> (SKILL.md files), not subagents. Skills load directly into the main agent's context. Cursor handles this natively.</p>
+  <p>CE's value is split: skills work fine in Cursor, but the 35 specialist agents require the bridge because CE dispatches them via namespace syntax that Cursor rejects.</p>
+
+  <h3>3. Subagent use is contained and predictable</h3>
+  <p>Superpowers uses subagents — the <code>subagent-driven-development</code> skill dispatches an implementer, a spec reviewer, and a code quality reviewer per task. But these are <strong>generic roles described inline</strong>, not named agents with their own <code>.md</code> files. No symlink, no naming conflicts.</p>
+
+  <h3>4. Zero-dependency design</h3>
+  <p>Superpowers is explicitly zero-dependency by policy. No MCP servers required, no external tools, no API keys. It works with whatever model and tools Cursor already has.</p>
+
+  <h2>The One Real Limitation</h2>
+  <div class="callout warn">
+    The <code>subagent-driven-development</code> skill dispatches multiple subagents <strong>sequentially</strong> (implementer &rarr; spec reviewer &rarr; quality reviewer). This is intentional by design — you want spec compliance before code quality review. It works fine in Cursor.
+  </div>
+
+  <h2>Skill-by-Skill Cursor Compatibility</h2>
+  <table>
+    <tr><th>Skill</th><th>Compatible?</th><th>Notes</th></tr>
+    <tr><td><code>brainstorming</code></td><td>Full</td><td>Pure context injection</td></tr>
+    <tr><td><code>writing-plans</code></td><td>Full</td><td>Pure context injection</td></tr>
+    <tr><td><code>executing-plans</code></td><td>Full</td><td>Batch execution with human checkpoints</td></tr>
+    <tr><td><code>subagent-driven-development</code></td><td>With awareness</td><td>Inline subagent roles work; sequential by design</td></tr>
+    <tr><td><code>test-driven-development</code></td><td>Full</td><td>Process instructions only</td></tr>
+    <tr><td><code>systematic-debugging</code></td><td>Full</td><td>Process instructions only</td></tr>
+    <tr><td><code>verification-before-completion</code></td><td>Full</td><td>Process instructions only</td></tr>
+    <tr><td><code>requesting-code-review</code></td><td>Full</td><td>Checklist skill</td></tr>
+    <tr><td><code>receiving-code-review</code></td><td>Full</td><td>Process instructions only</td></tr>
+    <tr><td><code>using-git-worktrees</code></td><td>Full</td><td>Shell commands, no agent dispatch</td></tr>
+    <tr><td><code>finishing-a-development-branch</code></td><td>Full</td><td>Decision workflow</td></tr>
+    <tr><td><code>dispatching-parallel-agents</code></td><td>Partial</td><td>Needs explicit "in parallel in a single message" phrasing</td></tr>
+    <tr><td><code>writing-skills</code></td><td>Full</td><td>Meta skill for creating new skills</td></tr>
+  </table>
+  <div class="callout tip">
+    <strong>12 of 13 skills work fully.</strong> One needs a phrasing adjustment for parallel dispatch.
+  </div>
+
+  <h2>Head-to-Head Comparison</h2>
+  <table>
+    <tr><th>Factor</th><th>Superpowers</th><th>Compound Engineering</th></tr>
+    <tr><td><strong>Install friction</strong></td><td>Low — one command</td><td>Medium — install + symlink bridge</td></tr>
+    <tr><td><strong>Skills work in Cursor</strong></td><td>All</td><td>All</td></tr>
+    <tr><td><strong>Agents work in Cursor</strong></td><td>Yes (inline roles)</td><td>Yes, with bridge (35 named agents)</td></tr>
+    <tr><td><strong>Breaks on upgrade</strong></td><td>No</td><td>Yes — version string in bridge needs updating</td></tr>
+    <tr><td><strong>Specialist depth</strong></td><td>Low — 3 generic roles</td><td>High — 35 domain-specific reviewers</td></tr>
+    <tr><td><strong>Workflow structure</strong></td><td>High — opinionated end-to-end</td><td>Low — pick what you need</td></tr>
+    <tr><td><strong>Occasional Cursor users</strong></td><td>Great fit</td><td>Requires more setup investment</td></tr>
+    <tr><td><strong>Power users</strong></td><td>May feel constraining</td><td>Great fit</td></tr>
+  </table>
+
+  <h2>Who Should Use Which</h2>
+
+  <h3>Use Superpowers if:</h3>
+  <ul>
+    <li>You use Cursor occasionally and want a structured workflow without setup overhead</li>
+    <li>You want the agent to slow you down before coding (brainstorm &rarr; plan &rarr; implement)</li>
+    <li>You care about TDD, YAGNI, and systematic debugging as defaults</li>
+    <li>You don't want to maintain a symlink bridge</li>
+  </ul>
+
+  <h3>Use Compound Engineering if:</h3>
+  <ul>
+    <li>You want deep specialist review (security, performance, TypeScript quality, data migrations)</li>
+    <li>You're already using Claude Code and want the same agents in Cursor</li>
+    <li>You're willing to do the one-time bridge setup</li>
+    <li>You want composable tools rather than an opinionated workflow</li>
+  </ul>
+
+  <h3>Use both if:</h3>
+  <ul>
+    <li>You want Superpowers' workflow structure <em>and</em> CE's specialist reviewers</li>
+    <li>They don't conflict — Superpowers handles the dev loop, CE handles deep review passes</li>
+  </ul>
+
+  <div class="callout">
+    <strong>Bottom line:</strong> If you're not an active Cursor power user and want something that just works, start with Superpowers. If you outgrow it, add CE on top.
+  </div>
+
+  <footer>
+    <a href="https://github.com/obra/superpowers">Superpowers GitHub</a> &middot;
+    <a href="migration.html">CE Cursor setup</a> &middot;
+    <a href="comparison.html">Cursor vs Claude Code</a> &middot;
+    <a href="index.html">Back to hub</a>
+  </footer>
+
+</div>
+</body>
+</html>
