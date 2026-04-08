@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Native Mindset — Key Principles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="slide-base.css">
+<style>
+  .slide {
+    padding: 40px 44px 36px;
+  }
+  .slide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+  }
+  .slide-label {
+    font-family: var(--font-body);
+    font-size: var(--size-small);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--bull-orange);
+    margin-bottom: 6px;
+  }
+  .slide-title {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--color-text-on-dark);
+    line-height: 1.2;
+    max-width: 480px;
+  }
+  .slide-title span { color: var(--bull-orange); }
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    gap: 0 28px;
+    align-items: start;
+  }
+  .divider {
+    background: rgba(255,255,255,0.12);
+    align-self: stretch;
+  }
+  .col-head {
+    font-family: var(--font-body);
+    font-size: var(--size-eyebrow);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--orange-tint-1);
+    margin-bottom: 18px;
+  }
+  .point {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .point:last-child { margin-bottom: 0; }
+  .point-num {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--bull-orange);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-text-on-dark);
+    margin-top: 1px;
+  }
+  .point-title {
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--color-text-on-dark);
+    line-height: 1.3;
+    margin-bottom: 3px;
+  }
+  .point-desc {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.5;
+  }
+  .pill {
+    display: inline-block;
+    background: rgba(255,85,57,0.18);
+    border: 1px solid rgba(255,85,57,0.35);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: var(--size-small);
+    font-weight: 500;
+    color: var(--orange-tint-1);
+    margin-bottom: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="slide-header">
+    <div>
+      <div class="slide-label">AI Native Engineering</div>
+      <div class="slide-title">Compound Engineering <span>Key Principles</span></div>
+    </div>
+  </div>
+
+  <div class="columns">
+    <div>
+      <div class="pill">Agent-native mindset</div>
+      <div class="col-head">The agent is your equal</div>
+      <div class="point">
+        <div class="point-num">1</div>
+        <div class="point-body">
+          <div class="point-title">Environmental parity</div>
+          <div class="point-desc">If you can run tests, check logs, or open a PR, so should the agent. Anything withheld becomes manual work for you.</div>
+        </div>
+      </div>
+      <div class="point">
+        <div class="point-num">2</div>
+        <div class="point-body">
+          <div class="point-title">CLAUDE.md is the memory</div>
+          <div class="point-desc">Context compounds over time. Every solved problem becomes searchable knowledge for the next session.</div>
+        </div>
+      </div>
+      <div class="point">
+        <div class="point-num">3</div>
+        <div class="point-body">
+          <div class="point-title">Extract your taste into the system</div>
+          <div class="point-desc">What lives in senior engineers' heads should live in files the agent reads, not in code review.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="pill">Beliefs to let go</div>
+      <div class="col-head">Your job is to ship value</div>
+      <div class="point">
+        <div class="point-num">1</div>
+        <div class="point-body">
+          <div class="point-title">Not every line needs review</div>
+          <div class="point-desc">If you do not trust the output, fix the system. Do not compensate by doing everything manually.</div>
+        </div>
+      </div>
+      <div class="point">
+        <div class="point-num">2</div>
+        <div class="point-body">
+          <div class="point-title">Code is not the primary artifact</div>
+          <div class="point-desc">A system that consistently produces good code beats any single brilliant implementation.</div>
+        </div>
+      </div>
+      <div class="point">
+        <div class="point-num">3</div>
+        <div class="point-body">
+          <div class="point-title">The 50/50 rule</div>
+          <div class="point-desc">Half your time building features, half improving the system. One hour on a review agent saves ten hours of review.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bull Symbol Logo -->
+  <div class="slide-logo">
+    <svg viewBox="0 0 600 574" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M567.858 259.576C572.205 248.339 574.629 236.183 574.629 223.443C574.629 168.553 530.324 123.815 475.569 123.063C472.811 70.0947 429.007 28.0295 375.34 28.0295C345.329 28.0295 318.453 41.188 300.063 62.0326C281.672 41.188 254.754 28.0295 224.786 28.0295C171.369 28.0295 127.691 69.7188 124.598 122.353V0H1.37931V123.104H123.093C68.9655 124.608 25.4127 169.013 25.4127 223.443C25.4127 236.183 27.837 248.381 32.1839 259.576C12.4138 277.914 0 304.106 0 333.18C0 388.571 45.0993 433.602 100.481 433.602H209.404L250.491 474.664V574H349.467V475.082L391.014 433.56H499.519C554.943 433.56 600 388.529 600 333.138C600 304.106 587.586 277.914 567.816 259.534L567.858 259.576ZM300.021 298.508H247.523V246.125H124.472V123.021H247.649V246.042H299.979V298.508H300.021Z" fill="white"/>
+    </svg>
+  </div>
+
+  <!-- Tree Monogram Watermark -->
+  <div class="slide-watermark">
+    <svg width="600" height="574" viewBox="0 0 600 574" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M567.858 259.576C572.205 248.339 574.629 236.183 574.629 223.443C574.629 168.553 530.324 123.815 475.569 123.063C472.811 70.0947 429.007 28.0295 375.34 28.0295C345.329 28.0295 318.453 41.188 300.063 62.0326C281.672 41.188 254.754 28.0295 224.786 28.0295C171.369 28.0295 127.691 69.7188 124.598 122.353V0H1.37931V123.104H123.093C68.9655 124.608 25.4127 169.013 25.4127 223.443C25.4127 236.183 27.837 248.381 32.1839 259.576C12.4138 277.914 0 304.106 0 333.18C0 388.571 45.0993 433.602 100.481 433.602H209.404L250.491 474.664V574H349.467V475.082L391.014 433.56H499.519C554.943 433.56 600 388.529 600 333.138C600 304.106 587.586 277.914 567.816 259.534L567.858 259.576ZM300.021 298.508H247.523V246.125H124.472V123.021H247.649V246.042H299.979V298.508H300.021Z" fill="white"/>
+    </svg>
+  </div>
+</div>
+</body>
+</html>

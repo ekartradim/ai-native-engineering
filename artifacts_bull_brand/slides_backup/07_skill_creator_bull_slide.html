@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>How to Create a Skill — AI Native Engineering</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="slide-base.css">
+<style>
+  .header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0; }
+  .slide-label { font-size:var(--size-eyebrow); font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--bull-orange); margin-bottom:5px; }
+  .slide-title { font-family:var(--font-display); font-size:24px; font-weight:900; color:#fff; line-height:1.2; margin-bottom:4px; }
+  .slide-title span { color:var(--bull-orange); }
+  .slide-sub { font-size:12px; color:rgba(255,255,255,.38); font-weight:400; margin-bottom:28px; }
+  .body { display:grid; grid-template-columns:1fr 200px; gap:28px; align-items:start; }
+  .steps { display:flex; flex-direction:column; gap:0; }
+  .step { display:flex; gap:14px; align-items:stretch; }
+  .step-left { display:flex; flex-direction:column; align-items:center; width:28px; flex-shrink:0; }
+  .step-dot { width:22px; height:22px; border-radius:50%; background:var(--bull-orange); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:#fff; flex-shrink:0; }
+  .step-line { width:1px; flex:1; background:var(--color-card-border); margin:4px 0; min-height:12px; }
+  .step:last-child .step-line { display:none; }
+  .step-content { padding-bottom:16px; flex:1; }
+  .step-title { font-family:var(--font-display); font-size:13px; font-weight:700; color:#fff; margin-bottom:2px; }
+  .step-desc { font-size:11.5px; color:rgba(255,255,255,.5); line-height:1.5; }
+  .loop-badge { display:inline-flex; align-items:center; gap:5px; background:rgba(255,85,57,.15); border:1px solid rgba(255,85,57,.3); border-radius:20px; padding:2px 10px; font-size:10px; color:var(--orange-tint-1); font-weight:500; margin-top:5px; }
+  .right-col { display:flex; flex-direction:column; align-items:center; gap:12px; padding-top:4px; }
+  .replicator-caption { font-size:10px; color:rgba(255,255,255,.35); text-align:center; line-height:1.5; max-width:160px; font-style:italic; }
+  .tag { display:inline-block; background:var(--color-card-bg); border:1px solid var(--color-card-border); border-radius:3px; font-size:9.5px; color:rgba(255,255,255,.45); padding:1px 6px; font-family:monospace; margin-top:3px; }
+</style>
+</head>
+<body>
+
+<div class="slide" style="padding:36px 44px 32px;">
+  <div class="header">
+    <div>
+      <div class="slide-label">AI Native Engineering · Meta Skill</div>
+      <div class="slide-title">How to <span>Create a Skill</span></div>
+      <div class="slide-sub">Teach Claude once. It replicates forever.</div>
+    </div>
+    <svg width="32" height="30" viewBox="0 0 600 574" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;opacity:.85">
+      <path d="M567.858 259.576C572.205 248.339 574.629 236.183 574.629 223.443C574.629 168.553 530.324 123.815 475.569 123.063C472.811 70.0947 429.007 28.0295 375.34 28.0295C345.329 28.0295 318.453 41.188 300.063 62.0326C281.672 41.188 254.754 28.0295 224.786 28.0295C171.369 28.0295 127.691 69.7188 124.598 122.353V0H1.37931V123.104H123.093C68.9655 124.608 25.4127 169.013 25.4127 223.443C25.4127 236.183 27.837 248.381 32.1839 259.576C12.4138 277.914 0 304.106 0 333.18C0 388.571 45.0993 433.602 100.481 433.602H209.404L250.491 474.664V574H349.467V475.082L391.014 433.56H499.519C554.943 433.56 600 388.529 600 333.138C600 304.106 587.586 277.914 567.816 259.534L567.858 259.576ZM300.021 298.508H247.523V246.125H124.472V123.021H247.649V246.042H299.979V298.508H300.021Z" fill="#FF5539"/>
+    </svg>
+  </div>
+
+  <div style="height:20px"></div>
+
+  <div class="body">
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-left"><div class="step-dot">1</div><div class="step-line"></div></div>
+        <div class="step-content">
+          <div class="step-title">Define intent</div>
+          <div class="step-desc">What should this skill enable Claude to do? When should it trigger? Clear trigger description prevents undertriggering.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-left"><div class="step-dot">2</div><div class="step-line"></div></div>
+        <div class="step-content">
+          <div class="step-title">Write SKILL.md</div>
+          <div class="step-desc">Instructions the agent reads on trigger. Under 500 lines. Add <span class="tag">scripts/</span> for reusable code, <span class="tag">assets/</span> for templates.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-left"><div class="step-dot">3</div><div class="step-line"></div></div>
+        <div class="step-content">
+          <div class="step-title">Write test cases</div>
+          <div class="step-desc">2 to 3 realistic, messy prompts. Write how a real user would ask, not a sanitised ideal.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-left"><div class="step-dot">4</div><div class="step-line"></div></div>
+        <div class="step-content">
+          <div class="step-title">Run evals in parallel</div>
+          <div class="step-desc">One agent runs with the skill, one runs without. Grade the diff. Repeat per test case simultaneously.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-left"><div class="step-dot">5</div><div class="step-line"></div></div>
+        <div class="step-content">
+          <div class="step-title">Iterate until satisfied</div>
+          <div class="step-desc">Read feedback, improve SKILL.md, rerun. Generalise fixes across all prompts, not just the failing one.</div>
+          <div class="loop-badge">↻ loops back to step 4</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-left"><div class="step-dot" style="background:rgba(255,85,57,.3);border:1px solid var(--bull-orange);">6</div></div>
+        <div class="step-content">
+          <div class="step-title">Package and ship</div>
+          <div class="step-desc">Run <span class="tag">package_skill.py</span> to validate and zip. Produces a <span class="tag">.skill</span> file ready to install.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="right-col">
+
+      <!-- Stargate Replicator SVG -->
+      <svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- central core 3x3 -->
+        <rect x="62" y="62" width="18" height="18" rx="2" fill="var(--bull-orange)" opacity="1"/>
+        <rect x="42" y="62" width="18" height="18" rx="2" fill="var(--orange-tint-1)" opacity=".85"/>
+        <rect x="82" y="62" width="18" height="18" rx="2" fill="var(--orange-tint-1)" opacity=".85"/>
+        <rect x="62" y="42" width="18" height="18" rx="2" fill="var(--orange-tint-1)" opacity=".85"/>
+        <rect x="62" y="82" width="18" height="18" rx="2" fill="var(--orange-tint-1)" opacity=".85"/>
+        <!-- diagonals / corners -->
+        <rect x="42" y="42" width="18" height="18" rx="2" fill="var(--orange-tint-3)" opacity=".5"/>
+        <rect x="82" y="42" width="18" height="18" rx="2" fill="var(--orange-tint-3)" opacity=".5"/>
+        <rect x="42" y="82" width="18" height="18" rx="2" fill="var(--orange-tint-3)" opacity=".5"/>
+        <rect x="82" y="82" width="18" height="18" rx="2" fill="var(--orange-tint-3)" opacity=".5"/>
+        <!-- legs extending out -->
+        <rect x="22" y="22" width="14" height="14" rx="2" fill="var(--bull-orange)" opacity=".7"/>
+        <rect x="8" y="8" width="12" height="12" rx="2" fill="var(--bull-orange)" opacity=".4"/>
+        <rect x="106" y="22" width="14" height="14" rx="2" fill="var(--bull-orange)" opacity=".7"/>
+        <rect x="122" y="8" width="12" height="12" rx="2" fill="var(--bull-orange)" opacity=".4"/>
+        <rect x="22" y="106" width="14" height="14" rx="2" fill="var(--bull-orange)" opacity=".7"/>
+        <rect x="8" y="122" width="12" height="12" rx="2" fill="var(--bull-orange)" opacity=".4"/>
+        <rect x="106" y="106" width="14" height="14" rx="2" fill="var(--bull-orange)" opacity=".7"/>
+        <rect x="122" y="122" width="12" height="12" rx="2" fill="var(--bull-orange)" opacity=".4"/>
+        <!-- connector blocks on legs -->
+        <rect x="32" y="32" width="8" height="8" rx="1" fill="var(--orange-tint-3)" opacity=".6"/>
+        <rect x="112" y="32" width="8" height="8" rx="1" fill="var(--orange-tint-3)" opacity=".6"/>
+        <rect x="32" y="112" width="8" height="8" rx="1" fill="var(--orange-tint-3)" opacity=".6"/>
+        <rect x="112" y="112" width="8" height="8" rx="1" fill="var(--orange-tint-3)" opacity=".6"/>
+        <!-- cardinal arm tips -->
+        <rect x="62" y="22" width="18" height="12" rx="2" fill="var(--bull-orange)" opacity=".55"/>
+        <rect x="62" y="8" width="18" height="12" rx="2" fill="var(--bull-orange)" opacity=".3"/>
+        <rect x="62" y="118" width="18" height="12" rx="2" fill="var(--bull-orange)" opacity=".55"/>
+        <rect x="62" y="132" width="18" height="12" rx="2" fill="var(--bull-orange)" opacity=".3"/>
+        <rect x="22" y="62" width="12" height="18" rx="2" fill="var(--bull-orange)" opacity=".55"/>
+        <rect x="8" y="62" width="12" height="18" rx="2" fill="var(--bull-orange)" opacity=".3"/>
+        <rect x="118" y="62" width="12" height="18" rx="2" fill="var(--bull-orange)" opacity=".55"/>
+        <rect x="132" y="62" width="12" height="18" rx="2" fill="var(--bull-orange)" opacity=".3"/>
+      </svg>
+
+      <div class="replicator-caption">A skill is a replicator block. Teach it once, it assembles itself into every future task.</div>
+    </div>
+  </div>
+
+  <!-- Bull Symbol Logo -->
+  <div class="slide-logo">
+    <svg viewBox="0 0 600 574" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M567.858 259.576C572.205 248.339 574.629 236.183 574.629 223.443C574.629 168.553 530.324 123.815 475.569 123.063C472.811 70.0947 429.007 28.0295 375.34 28.0295C345.329 28.0295 318.453 41.188 300.063 62.0326C281.672 41.188 254.754 28.0295 224.786 28.0295C171.369 28.0295 127.691 69.7188 124.598 122.353V0H1.37931V123.104H123.093C68.9655 124.608 25.4127 169.013 25.4127 223.443C25.4127 236.183 27.837 248.381 32.1839 259.576C12.4138 277.914 0 304.106 0 333.18C0 388.571 45.0993 433.602 100.481 433.602H209.404L250.491 474.664V574H349.467V475.082L391.014 433.56H499.519C554.943 433.56 600 388.529 600 333.138C600 304.106 587.586 277.914 567.816 259.534L567.858 259.576ZM300.021 298.508H247.523V246.125H124.472V123.021H247.649V246.042H299.979V298.508H300.021Z" fill="white"/>
+    </svg>
+  </div>
+
+  <!-- Tree Monogram Watermark -->
+  <div class="slide-watermark">
+    <svg width="600" height="574" viewBox="0 0 600 574" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M567.858 259.576C572.205 248.339 574.629 236.183 574.629 223.443C574.629 168.553 530.324 123.815 475.569 123.063C472.811 70.0947 429.007 28.0295 375.34 28.0295C345.329 28.0295 318.453 41.188 300.063 62.0326C281.672 41.188 254.754 28.0295 224.786 28.0295C171.369 28.0295 127.691 69.7188 124.598 122.353V0H1.37931V123.104H123.093C68.9655 124.608 25.4127 169.013 25.4127 223.443C25.4127 236.183 27.837 248.381 32.1839 259.576C12.4138 277.914 0 304.106 0 333.18C0 388.571 45.0993 433.602 100.481 433.602H209.404L250.491 474.664V574H349.467V475.082L391.014 433.56H499.519C554.943 433.56 600 388.529 600 333.138C600 304.106 587.586 277.914 567.816 259.534L567.858 259.576ZM300.021 298.508H247.523V246.125H124.472V123.021H247.649V246.042H299.979V298.508H300.021Z" fill="white"/>
+    </svg>
+  </div>
+</div>
+
+</body>
+</html>

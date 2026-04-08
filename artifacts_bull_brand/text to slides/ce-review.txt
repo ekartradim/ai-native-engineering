@@ -1,0 +1,68 @@
+ Slide: Code Review — Tiered Agent Swarm (/ce-review)
+
+  Slide title: Review — Right Reviewers, Right Confidence
+
+  ---
+  Left column: TWO-TIER SELECTION
+
+  Always-on (every review, 5 agents):
+  - correctness — logic errors, edge cases, state bugs
+  - testing — coverage gaps, weak assertions, brittle tests
+  - maintainability — coupling, naming, dead code
+  - agent-native — can an agent do everything a user can?
+  - learnings-researcher — checks docs/solutions/ for known patterns
+
+  Conditional (0-5 agents, selected by reasoning about the diff — not keyword matching):
+  - security — auth, public endpoints, user input
+  - performance — DB queries, caching, loops over data
+  - api-contract — routes, serializers, type signatures
+  - data-migrations — schema changes, backfills
+  - reliability — retries, timeouts, error handling
+
+  Selection is announced with justification:
+  Review team:
+  - security — new endpoint accepts user-provided redirect URL
+  - data-migrations — adds migration 20260303_add_index
+
+  Result: Small config change → 5 agents. Large auth feature → 8 agents. Cost scales with risk.
+
+  ---
+  Right column: CONFIDENCE PIPELINE
+
+  Every finding carries a confidence score. Below 0.60 → suppressed.
+
+  Per-persona calibration:
+
+  ┌─────────────┬───────────┬──────────────────────────────────────────────────────┐
+  │  Reviewer   │ Threshold │                         Why                          │
+  ├─────────────┼───────────┼──────────────────────────────────────────────────────┤
+  │ Security    │ 0.60+     │ Cost of missing an exploit is high                   │
+  ├─────────────┼───────────┼──────────────────────────────────────────────────────┤
+  │ Correctness │ 0.80+     │ Must trace actual execution path                     │
+  ├─────────────┼───────────┼──────────────────────────────────────────────────────┤
+  │ Performance │ 0.80+     │ False positives waste time on premature optimization │
+  └─────────────┴───────────┴──────────────────────────────────────────────────────┘
+
+  Cross-reviewer dedup (the novel part):
+  - Fingerprint: file + line_bucket(±3) + normalized_title
+  - Same issue flagged by multiple reviewers → union evidence, keep highest confidence
+  - Cross-reviewer agreement = implicit confidence amplifier
+
+  Ratchet rule: Findings can only move toward more conservative routing during synthesis. Never the other way. Disagreement → caution wins.
+
+  ---
+  Bottom strip: CONFIDENCE-GATED ROUTING
+
+  ┌────────────┬───────────────────────────────────────┬─────────────────────────────┐
+  │   Route    │                Meaning                │           Action            │
+  ├────────────┼───────────────────────────────────────┼─────────────────────────────┤
+  │ safe_auto  │ Deterministic fix, no behavior change │ Auto-applied                │
+  ├────────────┼───────────────────────────────────────┼─────────────────────────────┤
+  │ gated_auto │ Fix exists but changes behavior       │ Requires approval           │
+  ├────────────┼───────────────────────────────────────┼─────────────────────────────┤
+  │ manual     │ Needs human judgment                  │ Flagged as residual work    │
+  ├────────────┼───────────────────────────────────────┼─────────────────────────────┤
+  │ advisory   │ Information only                      │ Report, never becomes a fix │
+  └────────────┴───────────────────────────────────────┴─────────────────────────────┘
+
+  Bounded to 2 fix rounds max — unresolved issues become residual work, not infinite loops.

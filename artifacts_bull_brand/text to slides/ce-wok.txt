@@ -1,0 +1,71 @@
+  Slide: Plan-Driven Execution (/ce-work)
+
+  Slide title: Execution — From Plan to Shipped Feature
+
+  ---
+  Left column: THE EXECUTION LOOP
+
+  ce-work consumes a plan as a decision artifact, not a recipe.
+
+  4 Phases:
+
+  1. Quick Start — Read plan, extract implementation units, create task list, choose execution strategy
+
+  2. Execute — The core loop per unit:
+  Read plan-referenced code → Follow existing patterns →
+  Implement → Run tests → Commit → Next unit
+
+  3. Quality Check — Full test suite, lint, requirements trace verification
+
+  4. Ship — PR with monitoring plan, screenshots, attribution
+
+  Execution strategies scale with complexity:
+
+  ┌────────────────────┬──────────────────────┬──────────────────────────────────────────┐
+  │      Strategy      │         When         │                   Why                    │
+  ├────────────────────┼──────────────────────┼──────────────────────────────────────────┤
+  │ Inline             │ 1-2 tasks            │ Direct, interactive                      │
+  ├────────────────────┼──────────────────────┼──────────────────────────────────────────┤
+  │ Serial subagents   │ 3+ dependent tasks   │ Fresh context per unit, no degradation   │
+  ├────────────────────┼──────────────────────┼──────────────────────────────────────────┤
+  │ Parallel subagents │ 3+ independent tasks │ Non-overlapping files run simultaneously │
+  └────────────────────┴──────────────────────┴──────────────────────────────────────────┘
+
+  ---
+  Right column: WHAT IT ACTUALLY SOLVES
+
+  Problem 1: Context degradation
+  Long coding sessions lose coherence. ce-work dispatches subagents with fresh context per implementation unit — task 10 gets the same quality as task 1.
+
+  Problem 2: Hidden dependencies
+  The System-Wide Test Check forces a pause before each task completion:
+  - What callbacks/middleware fire when this runs?
+  - Do tests exercise the real chain, not just mocks?
+  - Can failure leave orphaned state?
+  - What other interfaces expose this?
+
+  This is the single most important quality gate — catches what "works on my machine" misses.
+
+  Problem 3: Scope creep
+  Plan's Scope Boundaries (explicit non-goals) and Requirements Trace (back to original request) keep execution on track. Deferred questions from planning are tracked and resolved, not forgotten.
+
+  Problem 4: "80% done" syndrome
+  Task list with verification criteria per unit. Every task has a definition of done from the plan. Progress is visible, not claimed.
+
+  ---
+  Bottom strip: THE DISCIPLINE LAYER
+
+  ┌────────────────────────┬─────────────────────────────────────────────────┐
+  │    Signal from plan    │              ce-work honors it as               │
+  ├────────────────────────┼─────────────────────────────────────────────────┤
+  │ test-first             │ Write failing test BEFORE implementation        │
+  ├────────────────────────┼─────────────────────────────────────────────────┤
+  │ characterization-first │ Capture existing behavior BEFORE changing it    │
+  ├────────────────────────┼─────────────────────────────────────────────────┤
+  │ Patterns to follow     │ Read referenced code FIRST, match conventions   │
+  ├────────────────────────┼─────────────────────────────────────────────────┤
+  │ Verification fields    │ Acceptance criteria checked before marking done │
+  └────────────────────────┴─────────────────────────────────────────────────┘
+
+  ---
+  Key Insight box (bottom-right):

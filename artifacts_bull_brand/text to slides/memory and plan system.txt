@@ -1,0 +1,50 @@
+ How Plan + Compound Memory System Works
+
+  The Problem It Solves
+
+  Teams solve the same problems repeatedly. Institutional knowledge lives in people's heads, not in searchable systems. Loading all past solutions into every AI session wastes tokens and context.
+
+  Two-Phase Architecture
+
+  Phase 1: Capture (ce-compound)
+  - After solving a problem, writes ONE file to docs/solutions/[category]/[slug].md
+  - Mandatory YAML frontmatter with enum-validated fields: problem_type, component, root_cause, severity, tags, symptoms, module
+  - Frontmatter is the search interface — structured metadata, not free text
+  - Content sections: Problem, Symptoms, What Didn't Work, Solution, Why This Works, Prevention
+
+  Phase 2: Retrieval (ce-plan → learnings-researcher)
+  - Every planning session auto-spawns a learnings-researcher agent
+  - Uses grep-based pre-filtering against frontmatter — never loads all docs into context
+  - Flow:
+    a. Extract keywords from planning context
+    b. Narrow to relevant category directories
+    c. grep tags:, module:, component:, symptoms: → returns file paths only
+    d. Read frontmatter (~30 lines) of 5-20 candidates
+    e. Score relevance → full-read only strong matches (typically 3-7 files)
+    f. Return distilled summaries to planner
+
+  Why This Matters (Token Economics)
+
+  ┌──────────────────────────────────────────┬───────────┐
+  │                 Approach                 │  Tokens   │
+  ├──────────────────────────────────────────┼───────────┤
+  │ Load all solutions into context          │ ~50,000+  │
+  ├──────────────────────────────────────────┼───────────┤
+  │ Grep-filter → frontmatter → score → read │ 500-2,000 │
+  └──────────────────────────────────────────┴───────────┘
+
+  25-100x reduction in context consumption while surfacing the same relevant knowledge.
+
+  The Lifecycle
+
+  Solve problem → /ce-compound (capture with frontmatter)
+                      ↓ conditionally triggers
+                /ce-compound-refresh (maintains, dedupes, deletes stale)
+
+  Plan new work → /ce-plan → learnings-researcher (grep frontmatter → score → distill)
+                      ↓
+                Plan includes institutional learnings
+
+  Key Insight
+
+  The frontmatter schema IS the retrieval mechanism. It's not documentation metadata — it's a search index designed for grep. No vector DB, no embeddings, no external service. Just structured YAML + ripgrep.

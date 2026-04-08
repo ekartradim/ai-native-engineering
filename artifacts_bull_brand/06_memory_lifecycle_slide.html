@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory Lifecycle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="slide-base.css">
+<style>
+  .slide {
+    padding: 48px 64px 0;
+  }
+
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid rgba(255,85,57,0.07);
+    pointer-events: none;
+  }
+  .ring-1 { width: 380px; height: 380px; top: -140px; right: -100px; }
+  .ring-2 { width: 560px; height: 560px; top: -240px; right: -220px; }
+
+  .slide-label {
+    font-family: var(--font-body);
+    font-size: var(--size-small);
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--bull-orange);
+    margin-bottom: 7px;
+  }
+  .slide-title {
+    font-family: var(--font-display);
+    font-size: 34px;
+    font-weight: 900;
+    color: var(--color-text-on-dark);
+    margin-bottom: 28px;
+    line-height: 1.15;
+  }
+
+  /* Main grid: two columns + bottom strip */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .panel {
+    background: var(--color-card-bg);
+    border: 0.5px solid rgba(255,255,255,0.11);
+    border-radius: var(--card-radius);
+    padding: 22px 26px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .panel-command {
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    background: rgba(255,85,57,0.2);
+    color: var(--orange-tint-2);
+    padding: 3px 10px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .panel-command.teal {
+    background: rgba(93,202,165,0.15);
+    color: #5DCAA5;
+  }
+  .panel-title {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* CAPTURE side */
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 16px;
+  }
+  .pipe-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    position: relative;
+  }
+  .pipe-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 22px;
+    width: 0.5px;
+    height: calc(100% + 2px);
+    background: rgba(255,85,57,0.3);
+  }
+  .pipe-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255,85,57,0.2);
+    border: 1.5px solid var(--bull-orange);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--bull-orange);
+    flex-shrink: 0;
+    margin-top: 2px;
+    position: relative;
+    z-index: 1;
+  }
+  .pipe-body {
+    padding-bottom: 14px;
+  }
+  .pipe-name {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-on-dark);
+    margin-bottom: 2px;
+  }
+  .pipe-desc {
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.5;
+  }
+  .agents-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 5px;
+    flex-wrap: wrap;
+  }
+  .agent-pill {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(119,136,249,0.18);
+    color: var(--blue-tint-2);
+    border: 0.5px solid rgba(119,136,249,0.3);
+  }
+
+  .compact-note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-top: auto;
+  }
+  .compact-tag {
+    font-size: 10px;
+    font-family: 'Courier New', monospace;
+    color: var(--orange-tint-2);
+    background: rgba(255,85,57,0.15);
+    padding: 1px 7px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .compact-text {
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.4;
+  }
+
+  /* MAINTAIN side */
+  .maintain-phases {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .maintain-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .maintain-num {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(93,202,165,0.7);
+    width: 16px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .maintain-bar {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border-radius: 4px;
+    padding: 7px 12px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: rgba(255,255,255,0.75);
+  }
+  .maintain-bar span {
+    font-weight: 500;
+    color: var(--color-text-on-dark);
+  }
+
+  .actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    margin-top: auto;
+  }
+  .action-card {
+    background: rgba(93,202,165,0.08);
+    border: 0.5px solid rgba(93,202,165,0.2);
+    border-radius: 6px;
+    padding: 8px 12px;
+  }
+  .action-name {
+    font-family: var(--font-body);
+    font-size: var(--size-small);
+    font-weight: 700;
+    color: #5DCAA5;
+    margin-bottom: 3px;
+    letter-spacing: 0.5px;
+  }
+  .action-desc {
+    font-family: var(--font-body);
+    font-size: var(--size-small);
+    color: rgba(255,255,255,0.5);
+    line-height: 1.4;
+  }
+
+  /* Bottom strip */
+  .bottom-strip {
+    background: rgba(255,85,57,0.08);
+    border-top: 0.5px solid rgba(255,85,57,0.2);
+    padding: 14px 26px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin: 20px -64px 0;
+  }
+  .strip-label {
+    font-family: var(--font-body);
+    font-size: var(--size-eyebrow);
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--bull-orange);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .strip-divider {
+    width: 0.5px;
+    height: 28px;
+    background: rgba(255,85,57,0.3);
+    flex-shrink: 0;
+  }
+  .triggers {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .trigger-pill {
+    font-family: var(--font-body);
+    font-size: var(--size-small);
+    color: var(--color-text-muted);
+    background: rgba(255,255,255,0.06);
+    border: 0.5px solid var(--color-card-border);
+    border-radius: 12px;
+    padding: 4px 12px;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="ring ring-1"></div>
+  <div class="ring ring-2"></div>
+
+  <p class="slide-label">Compound Engineering Systems</p>
+  <h1 class="slide-title">Memory Lifecycle &#8212; Capture &amp; Maintain</h1>
+
+  <div class="main-grid">
+
+    <!-- LEFT: CAPTURE -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-command">/ce-compound</span>
+        <span class="panel-title">Capture</span>
+      </div>
+
+      <div class="pipeline">
+        <div class="pipe-step">
+          <div class="pipe-dot">1</div>
+          <div class="pipe-body">
+            <p class="pipe-name">3 parallel research agents</p>
+            <div class="agents-row">
+              <span class="agent-pill">Context Analyzer</span>
+              <span class="agent-pill">Solution Extractor</span>
+              <span class="agent-pill">Related Docs Finder</span>
+            </div>
+          </div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-dot">2</div>
+          <div class="pipe-body">
+            <p class="pipe-name">Assemble structured doc</p>
+            <p class="pipe-desc">Validated YAML frontmatter + sections: Problem, What Didn't Work, Solution, Prevention</p>
+          </div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-dot">3</div>
+          <div class="pipe-body">
+            <p class="pipe-name">Write to codebase</p>
+            <p class="pipe-desc" style="font-family:'Courier New',monospace; font-size:11px; color:rgba(255,144,128,0.8);">docs/solutions/[category]/[slug]-[date].md</p>
+          </div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-dot">4</div>
+          <div class="pipe-body">
+            <p class="pipe-name">Selective refresh trigger</p>
+            <p class="pipe-desc">Evaluates whether existing docs need update &#8212; does not always fire</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="compact-note">
+        <span class="compact-tag">--compact</span>
+        <span class="compact-text">Single-pass, no subagents. Same schema, minimal content. For tight context budgets.</span>
+      </div>
+    </div>
+
+    <!-- RIGHT: MAINTAIN -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-command teal">/ce-compound-refresh</span>
+        <span class="panel-title">Maintain</span>
+      </div>
+
+      <p style="font-size:12px; color:rgba(255,255,255,0.45); margin-bottom:14px; line-height:1.5;">Docs rot. Stale learnings <span style="color:rgba(255,255,255,0.7); font-weight:500;">mislead</span> &#8212; worse than no learnings. 5-phase maintenance cycle:</p>
+
+      <div class="maintain-phases">
+        <div class="maintain-row">
+          <span class="maintain-num">1</span>
+          <div class="maintain-bar"><span>Investigate</span> each learning against current codebase</div>
+        </div>
+        <div class="maintain-row">
+          <span class="maintain-num">2</span>
+          <div class="maintain-bar"><span>Check</span> pattern docs for overlap &amp; contradictions</div>
+        </div>
+        <div class="maintain-row">
+          <span class="maintain-num">3</span>
+          <div class="maintain-bar"><span>Classify</span> &#8212; Keep / Update / Consolidate / Replace / Delete</div>
+        </div>
+        <div class="maintain-row">
+          <span class="maintain-num">4</span>
+          <div class="maintain-bar"><span>Execute</span> &#8212; actually edits, merges, and deletes (doesn't just flag)</div>
+        </div>
+        <div class="maintain-row">
+          <span class="maintain-num">5</span>
+          <div class="maintain-bar"><span>Commit</span> changes to git</div>
+        </div>
+      </div>
+
+      <div class="actions-grid">
+        <div class="action-card">
+          <p class="action-name">Update</p>
+          <p class="action-desc">Fixes paths, class names, snippets in-place</p>
+        </div>
+        <div class="action-card">
+          <p class="action-name">Consolidate</p>
+          <p class="action-desc">Merges overlapping docs into one canonical version</p>
+        </div>
+        <div class="action-card">
+          <p class="action-name">Replace</p>
+          <p class="action-desc">Spawns subagent to rewrite, deletes old</p>
+        </div>
+        <div class="action-card">
+          <p class="action-name">Delete</p>
+          <p class="action-desc">Removes file &#8212; git history is the archive</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom strip: smart triggering -->
+  <div class="bottom-strip">
+    <span class="strip-label">Smart triggering</span>
+    <div class="strip-divider"></div>
+    <div class="triggers">
+      <span class="trigger-pill">New fix contradicts existing learning</span>
+      <span class="trigger-pill">New fix supersedes older solution</span>
+      <span class="trigger-pill">Refactor/rename likely invalidated older docs</span>
+      <span class="trigger-pill">Related Docs Finder surfaced stale candidates</span>
+    </div>
+  </div>
+
+  <!-- Tree Monogram Watermark -->
+  <div class="slide-watermark">
+    <svg width="600" height="574" viewBox="0 0 600 574" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M567.858 259.576C572.205 248.339 574.629 236.183 574.629 223.443C574.629 168.553 530.324 123.815 475.569 123.063C472.811 70.0947 429.007 28.0295 375.34 28.0295C345.329 28.0295 318.453 41.188 300.063 62.0326C281.672 41.188 254.754 28.0295 224.786 28.0295C171.369 28.0295 127.691 69.7188 124.598 122.353V0H1.37931V123.104H123.093C68.9655 124.608 25.4127 169.013 25.4127 223.443C25.4127 236.183 27.837 248.381 32.1839 259.576C12.4138 277.914 0 304.106 0 333.18C0 388.571 45.0993 433.602 100.481 433.602H209.404L250.491 474.664V574H349.467V475.082L391.014 433.56H499.519C554.943 433.56 600 388.529 600 333.138C600 304.106 587.586 277.914 567.816 259.534L567.858 259.576ZM300.021 298.508H247.523V246.125H124.472V123.021H247.649V246.042H299.979V298.508H300.021Z" fill="white"/>
+    </svg>
+  </div>
+</div>
+</body>
+</html>

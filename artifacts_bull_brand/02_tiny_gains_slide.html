@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Power of Tiny Gains — Agentic Harness Systems</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="slide-base.css">
+<style>
+  body {
+    font-family: var(--font-body);
+    background: var(--infinity);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    width: 1280px;
+    height: 720px;
+    background: var(--dream-in-blue);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 0;
+    padding: 0;
+  }
+
+  .slide::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0;
+    width: 6px; height: 100%;
+    background: #FF5539;
+    z-index: 10;
+  }
+
+  /* ── LEFT PANEL ── */
+  .left {
+    flex: 0 0 52%;
+    display: flex;
+    flex-direction: column;
+    padding: 44px 40px 32px 48px;
+    position: relative;
+    z-index: 1;
+    gap: 0;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #7788F9;
+    margin-bottom: 10px;
+  }
+
+  .headline {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--color-text-on-dark);
+    line-height: 1.08;
+    margin-bottom: 8px;
+  }
+  .headline span { color: #FF5539; }
+
+  .rule {
+    width: 48px;
+    height: 4px;
+    background: #FF5539;
+    border-radius: 2px;
+    margin-bottom: 20px;
+  }
+
+  .tagline {
+    font-size: 14px;
+    font-weight: 400;
+    font-style: italic;
+    color: #A4AFFB;
+    line-height: 1.65;
+    max-width: 400px;
+    margin-bottom: 24px;
+  }
+
+  /* Hero image — no card, fills space cleanly */
+  .hero-wrap {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .hero-wrap img {
+    height: 100%;
+    max-height: 340px;
+    width: auto;
+    max-width: 100%;
+    border-radius: 10px;
+    display: block;
+    object-fit: contain;
+  }
+
+  /* Bull logo at bottom left */
+  .bull-logo {
+    margin-top: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .bull-logo img {
+    height: 36px;
+    width: auto;
+    opacity: 0.9;
+  }
+
+  /* Divider */
+  .divider {
+    width: 5px;
+    background: #FF5539;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+
+  /* ── RIGHT PANEL ── */
+  .right {
+    flex: 1;
+    background: rgba(0, 40, 112, 0.7);
+    display: flex;
+    flex-direction: column;
+    padding: 36px 32px 32px;
+    z-index: 1;
+  }
+
+  .right-header {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #FF5539;
+    margin-bottom: 20px;
+  }
+
+  /* Feature cards — NO stat row */
+  .features {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
+
+  .feature {
+    background: rgba(0, 40, 112, 0.5);
+    border-radius: 10px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .feat-icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .feat-icon svg { width: 18px; height: 18px; }
+
+  .feat-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 5px;
+  }
+
+  .feat-body {
+    font-size: 12px;
+    color: #A4AFFB;
+    line-height: 1.55;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <!-- LEFT -->
+  <div class="left">
+    <p class="eyebrow">Principle</p>
+    <h1 class="headline">The Power of<br><span>Tiny Gains</span></h1>
+    <div class="rule"></div>
+    <p class="tagline">We overestimate the power of big moves and underestimate the compounding effect of small daily improvements.</p>
+
+    <div class="hero-wrap">
+      <img src="assets/images/tiny_gains_chart.png" alt="The Power of Tiny Gains chart" />
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- RIGHT -->
+  <div class="right">
+    <p class="right-header">Applied to Agentic Harness Systems</p>
+
+    <div class="features">
+
+      <div class="feature" style="border-left: 4px solid #FF5539;">
+        <div class="feat-icon" style="background:#FF553920;">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 2a3 3 0 013 3v1h2a2 2 0 012 2v2a6 6 0 01-6 6H11a6 6 0 01-6-6V8a2 2 0 012-2h2V5a3 3 0 013-3z" stroke="#FF5539" stroke-width="1.8" fill="none"/>
+            <path d="M9 21v-2a3 3 0 013-3h0a3 3 0 013 3v2" stroke="#FF5539" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <p class="feat-title">Knowledge compounds</p>
+          <p class="feat-body">Every distilled insight makes every agent smarter — gains accumulate and multiply across the entire harness.</p>
+        </div>
+      </div>
+
+      <div class="feature" style="border-left: 4px solid #FFB600;">
+        <div class="feat-icon" style="background:#FFB60020;">
+          <svg viewBox="0 0 24 24" fill="none">
+            <polyline points="3,17 7,10 12,13 18,5" stroke="#FFB600" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="16,5 20,5 20,9" stroke="#FFB600" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <p class="feat-title">Evals iterate daily</p>
+          <p class="feat-body">Incremental scoring improvements build into dramatically better prompt quality over cycles.</p>
+        </div>
+      </div>
+
+      <div class="feature" style="border-left: 4px solid #00B290;">
+        <div class="feat-icon" style="background:#00B29020;">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L4 7v5c0 5.25 3.5 10.15 8 11.35C17.5 22.15 21 17.25 21 12V7L12 2Z" stroke="#00B290" stroke-width="1.8" fill="none" stroke-linejoin="round"/>
+            <polyline points="9,12 11,14 15,10" stroke="#00B290" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <p class="feat-title">Hooks reinforce safety</p>
+          <p class="feat-body">Small PreToolUse checks compound into a robust, policy-enforced security posture.</p>
+        </div>
+      </div>
+
+      <div class="feature" style="border-left: 4px solid #7788F9;">
+        <div class="feat-icon" style="background:#7788F920;">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="3" stroke="#7788F9" stroke-width="2"/>
+            <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M16.9 16.9l2.1 2.1M4.9 19.1l2.1-2.1M16.9 7.1l2.1-2.1" stroke="#7788F9" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <p class="feat-title">Context hygiene</p>
+          <p class="feat-body">Committing after every step and opening clean sessions prevents compounding drift.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Tree Monogram Watermark -->
+  <div class="slide-watermark">
+    <svg width="600" height="574" viewBox="0 0 600 574" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M567.858 259.576C572.205 248.339 574.629 236.183 574.629 223.443C574.629 168.553 530.324 123.815 475.569 123.063C472.811 70.0947 429.007 28.0295 375.34 28.0295C345.329 28.0295 318.453 41.188 300.063 62.0326C281.672 41.188 254.754 28.0295 224.786 28.0295C171.369 28.0295 127.691 69.7188 124.598 122.353V0H1.37931V123.104H123.093C68.9655 124.608 25.4127 169.013 25.4127 223.443C25.4127 236.183 27.837 248.381 32.1839 259.576C12.4138 277.914 0 304.106 0 333.18C0 388.571 45.0993 433.602 100.481 433.602H209.404L250.491 474.664V574H349.467V475.082L391.014 433.56H499.519C554.943 433.56 600 388.529 600 333.138C600 304.106 587.586 277.914 567.816 259.534L567.858 259.576ZM300.021 298.508H247.523V246.125H124.472V123.021H247.649V246.042H299.979V298.508H300.021Z" fill="white"/>
+    </svg>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compound Engineering Loop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #FF5539;
+    --blue:   #002870;
+    --gold:   #FFB600;
+    --teal:   #00B290;
+    --indigo: #7788F9;
+    --white:  #ffffff;
+    --card:   rgba(255,255,255,0.045);
+    --border: rgba(255,255,255,0.09);
+    --muted:  rgba(255,255,255,0.5);
+    --dim:    rgba(255,255,255,0.3);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #010e28;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Roboto', sans-serif;
+    padding: 2rem;
+  }
+
+  /* ── SLIDE WRAPPER ── */
+  .slide {
+    position: relative;
+    width: 100%;
+    max-width: 860px;
+    background: var(--blue);
+    border-radius: 6px;
+    overflow: hidden;
+    padding: 48px 44px 40px;
+    box-shadow:
+      0 40px 100px rgba(0,0,0,0.7),
+      0 0 0 1px rgba(255,255,255,0.06),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  /* subtle dot grid */
+  .slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+  }
+
+  .top-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--orange) 0%, rgba(255,85,57,0.3) 70%, transparent 100%);
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 0.05s forwards;
+  }
+  .eyebrow {
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 3.5px;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 9px;
+  }
+  .title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.2px;
+  }
+  .title-rule {
+    width: 40px;
+    height: 2px;
+    background: var(--orange);
+    margin: 12px auto 0;
+    border-radius: 1px;
+    opacity: 0.55;
+  }
+
+  /* ── CANVAS ── */
+  .canvas {
+    position: relative;
+    width: 100%;
+    /* fixed height so absolute children have a reliable reference */
+    height: 420px;
+    margin: 0 auto;
+  }
+
+  /* ── STAGE CARDS ── */
+  .stage {
+    position: absolute;
+    width: 185px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 16px 18px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: default;
+    opacity: 0;
+  }
+
+  /* Cardinal placement — center of canvas is ~430×210 */
+  .s-plan     { top: 0;    left: 50%; transform: translateX(-50%); }
+  .s-work     { top: 50%;  right: 0;  transform: translateY(-50%); }
+  .s-review   { bottom: 0; left: 50%; transform: translateX(-50%); }
+  .s-compound { top: 50%;  left: 0;   transform: translateY(-50%); }
+
+  /* top accent stripe */
+  .stage::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    border-radius: 7px 7px 0 0;
+  }
+  .s-plan::before     { background: var(--indigo); }
+  .s-work::before     { background: var(--orange); }
+  .s-review::before   { background: var(--teal); }
+  .s-compound::before { background: var(--gold); }
+
+  .s-plan:hover     { border-color: rgba(119,136,249,0.35); box-shadow: 0 8px 32px rgba(119,136,249,0.18); }
+  .s-work:hover     { border-color: rgba(255,85,57,0.4);   box-shadow: 0 8px 32px rgba(255,85,57,0.2); }
+  .s-review:hover   { border-color: rgba(0,178,144,0.35);  box-shadow: 0 8px 32px rgba(0,178,144,0.18); }
+  .s-compound:hover { border-color: rgba(255,182,0,0.35);  box-shadow: 0 8px 32px rgba(255,182,0,0.18); }
+
+  .stage-num {
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .s-plan     .stage-num { color: var(--indigo); }
+  .s-work     .stage-num { color: var(--orange); }
+  .s-review   .stage-num { color: var(--teal); }
+  .s-compound .stage-num { color: var(--gold); }
+
+  .stage-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .stage-sub {
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 11px;
+    line-height: 1.4;
+  }
+  .bullets { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .bullets li {
+    font-size: 9.5px;
+    color: var(--dim);
+    line-height: 1.4;
+    padding-left: 12px;
+    position: relative;
+  }
+  .bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 5.5px;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    opacity: 0.55;
+  }
+  .s-plan     .bullets li::before { background: var(--indigo); }
+  .s-work     .bullets li::before { background: var(--orange); }
+  .s-review   .bullets li::before { background: var(--teal); }
+  .s-compound .bullets li::before { background: var(--gold); }
+
+  /* ── CENTER NODE ── */
+  .center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeIn 0.5s ease 1s forwards;
+  }
+  .ring-outer {
+    width: 124px; height: 124px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(255,85,57,0.28);
+    display: flex; align-items: center; justify-content: center;
+    animation: spin 30s linear infinite;
+  }
+  .ring-inner {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: rgba(255,85,57,0.06);
+    border: 1px solid rgba(255,85,57,0.18);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 4px;
+    animation: spin 30s linear infinite reverse;
+    padding: 10px;
+  }
+  .center-glyph {
+    font-size: 16px;
+    color: var(--orange);
+    opacity: 0.7;
+    line-height: 1;
+  }
+  .center-text {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--orange);
+    text-align: center;
+    line-height: 1.35;
+  }
+  .center-hint {
+    font-size: 7.5px;
+    color: var(--dim);
+    text-align: center;
+    line-height: 1.4;
+    max-width: 60px;
+  }
+
+  /* ── SVG ARC ARROWS ── */
+  .arcs {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .arc {
+    fill: none;
+    stroke: var(--orange);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    opacity: 0;
+    stroke-dasharray: 300;
+    stroke-dashoffset: 300;
+    transition: opacity 0.3s;
+  }
+  .arc.visible {
+    opacity: 0.5;
+    animation: drawLine 0.7s cubic-bezier(0.4,0,0.2,1) forwards;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    position: relative;
+    z-index: 1;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 1.3s forwards;
+  }
+  .footer-brand {
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.18);
+    white-space: nowrap;
+  }
+  .footer-quote {
+    font-size: 11.5px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--muted);
+    text-align: center;
+    letter-spacing: 0.1px;
+    flex: 1;
+  }
+
+  /* ── KEYFRAMES ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes drawLine {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); } to { transform: rotate(360deg); }
+  }
+
+  /* Stage entrance keyframes */
+  .s-plan {
+    animation: entryTop 0.5s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+  }
+  .s-work {
+    animation: entryRight 0.5s cubic-bezier(0.16,1,0.3,1) 0.4s forwards;
+  }
+  .s-review {
+    animation: entryBottom 0.5s cubic-bezier(0.16,1,0.3,1) 0.6s forwards;
+  }
+  .s-compound {
+    animation: entryLeft 0.5s cubic-bezier(0.16,1,0.3,1) 0.8s forwards;
+  }
+
+  @keyframes entryTop {
+    from { opacity:0; transform: translateX(-50%) translateY(-14px); }
+    to   { opacity:1; transform: translateX(-50%) translateY(0); }
+  }
+  @keyframes entryRight {
+    from { opacity:0; transform: translateY(-50%) translateX(14px); }
+    to   { opacity:1; transform: translateY(-50%) translateX(0); }
+  }
+  @keyframes entryBottom {
+    from { opacity:0; transform: translateX(-50%) translateY(14px); }
+    to   { opacity:1; transform: translateX(-50%) translateY(0); }
+  }
+  @keyframes entryLeft {
+    from { opacity:0; transform: translateY(-50%) translateX(-14px); }
+    to   { opacity:1; transform: translateY(-50%) translateX(0); }
+  }
+
+  /* preserve final transform on hover without fighting animation */
+  .s-plan:hover     { transform: translateX(-50%) translateY(-4px) scale(1.025); }
+  .s-work:hover     { transform: translateY(-50%) translateX(4px) scale(1.025); }
+  .s-review:hover   { transform: translateX(-50%) translateY(4px) scale(1.025); }
+  .s-compound:hover { transform: translateY(-50%) translateX(-4px) scale(1.025); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .stage, .header, .footer, .center { opacity: 1 !important; }
+    .arc { stroke-dashoffset: 0 !important; opacity: 0.5 !important; }
+    .s-plan     { transform: translateX(-50%); }
+    .s-work     { transform: translateY(-50%); }
+    .s-review   { transform: translateX(-50%); }
+    .s-compound { transform: translateY(-50%); }
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="top-bar"></div>
+
+  <header class="header">
+    <p class="eyebrow">AI-Native Engineering</p>
+    <h1 class="title">Compound Engineering Loop</h1>
+    <div class="title-rule"></div>
+  </header>
+
+  <div class="canvas" id="canvas">
+
+    <!--
+      Canvas is 860 - 2×44px = 772px wide, 420px tall.
+      We'll use a viewBox that mirrors those proportions for the SVG.
+      Stage card centres (approx):
+        PLAN:     (386, 60)   → card left=293, top=0
+        WORK:     (772, 210)  → card right=0
+        REVIEW:   (386, 360)  → card bottom=0
+        COMPOUND: (0, 210)    → card left=0
+    -->
+    <svg class="arcs" id="arcs" viewBox="0 0 772 420" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5"
+          markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1.5L8 5L2 8.5" fill="none" stroke="#FF5539"
+            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <!-- PLAN → WORK -->
+      <path class="arc" id="a1" d="M 479 75 Q 660 55 742 180" marker-end="url(#ah)"/>
+      <!-- WORK → REVIEW -->
+      <path class="arc" id="a2" d="M 762 250 Q 780 380 498 398" marker-end="url(#ah)"/>
+      <!-- REVIEW → COMPOUND -->
+      <path class="arc" id="a3" d="M 275 398 Q -10 380 10 250" marker-end="url(#ah)"/>
+      <!-- COMPOUND → PLAN -->
+      <path class="arc" id="a4" d="M 10 180 Q 90 50 293 75" marker-end="url(#ah)"/>
+    </svg>
+
+    <!-- 01 PLAN -->
+    <div class="stage s-plan">
+      <div class="stage-num">01</div>
+      <div class="stage-name">Plan</div>
+      <div class="stage-sub">Research  →  Structured Plan</div>
+      <ul class="bullets">
+        <li>Searches past solutions automatically</li>
+        <li>Creates implementation units</li>
+        <li>Maps dependencies upfront</li>
+      </ul>
+    </div>
+
+    <!-- 02 WORK -->
+    <div class="stage s-work">
+      <div class="stage-num">02</div>
+      <div class="stage-name">Work</div>
+      <div class="stage-sub">Execute  →  Validate  →  Commit</div>
+      <ul class="bullets">
+        <li>Agent implements step by step</li>
+        <li>Tests run after each change</li>
+        <li>Git isolation via branches</li>
+      </ul>
+    </div>
+
+    <!-- 03 REVIEW -->
+    <div class="stage s-review">
+      <div class="stage-num">03</div>
+      <div class="stage-name">Review</div>
+      <div class="stage-sub">Semantic Code Review</div>
+      <ul class="bullets">
+        <li>5 always-on reviewer agents</li>
+        <li>Confidence-gated findings (0.60)</li>
+        <li>Deduplication across reviewers</li>
+      </ul>
+    </div>
+
+    <!-- 04 COMPOUND -->
+    <div class="stage s-compound">
+      <div class="stage-num">04</div>
+      <div class="stage-name">Compound</div>
+      <div class="stage-sub">Capture Knowledge</div>
+      <ul class="bullets">
+        <li>Structured metadata docs</li>
+        <li>Stored in docs/solutions/</li>
+        <li>Refreshes stale learnings</li>
+      </ul>
+    </div>
+
+    <!-- Center feedback node -->
+    <div class="center">
+      <div class="ring-outer">
+        <div class="ring-inner">
+          <div class="center-glyph">⟳</div>
+          <div class="center-text">Institutional<br>knowledge</div>
+          <div class="center-hint">feeds future planning</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /canvas -->
+
+  <footer class="footer">
+    <span class="footer-brand">DataSentics · a Bull Company</span>
+    <p class="footer-quote">"Each unit of engineering work makes subsequent units easier, not harder."</p>
+    <span class="footer-brand">&nbsp;</span>
+  </footer>
+</div>
+
+<script>
+  const delays = [200, 450, 700, 950];
+  ['a1','a2','a3','a4'].forEach((id, i) => {
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('visible');
+    }, delays[i]);
+  });
+</script>
+</body>
+</html>

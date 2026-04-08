@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Native Workflow — Bull</title>
+
+<!-- Roboto from Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+<style>
+  /* Tosh A — Display / Headlines */
+  @font-face {
+    font-family: 'Tosh A';
+    src: url('./fonts/ToshA-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Tosh A';
+    src: url('./fonts/ToshA-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Tosh A';
+    src: url('./fonts/ToshA-Black.woff2') format('woff2');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  :root {
+    /* Primary */
+    --bull-orange: #FF5539;
+    --dream-in-blue: #002870;
+
+    /* Orange tints */
+    --orange-tint-1: #FF7761;
+    --orange-tint-2: #FF9280;
+    --orange-tint-3: #FFADA0;
+    --orange-tint-4: #FFE4DF;
+
+    /* Blue tints */
+    --blue-tint-1: #7788F9;
+    --blue-tint-2: #A4AFFB;
+
+    /* Secondary */
+    --sunbeam: #FFB600;
+    --vitality: #00B290;
+    --sovereign: #1C38F5;
+    --infinity: #000000;
+
+    /* Semantic */
+    --color-bg: #FFFFFF;
+    --color-surface: #F8F7F5;
+    --color-border: #E5E2DC;
+    --color-border-bright: #D0CCC4;
+    --color-text: var(--infinity);
+    --color-text-secondary: #4A4A4A;
+    --color-text-dim: #8A8A8A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Tree monogram — lower-right */
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -60px;
+    right: -40px;
+    width: 400px;
+    height: 383px;
+    background-image: url("data:image/svg+xml,%3Csvg width='600' height='574' viewBox='0 0 600 574' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23clip0_574_6732)'%3E%3Cpath d='M567.858 259.576C572.205 248.339 574.629 236.183 574.629 223.443C574.629 168.553 530.324 123.815 475.569 123.063C472.811 70.0947 429.007 28.0295 375.34 28.0295C345.329 28.0295 318.453 41.188 300.063 62.0326C281.672 41.188 254.754 28.0295 224.786 28.0295C171.369 28.0295 127.691 69.7188 124.598 122.353V0H1.37931V123.104H123.093C68.9655 124.608 25.4127 169.013 25.4127 223.443C25.4127 236.183 27.837 248.381 32.1839 259.576C12.4138 277.914 0 304.106 0 333.18C0 388.571 45.0993 433.602 100.481 433.602H209.404L250.491 474.664V574H349.467V475.082L391.014 433.56H499.519C554.943 433.56 600 388.529 600 333.138C600 304.106 587.586 277.914 567.816 259.534L567.858 259.576ZM300.021 298.508H247.523V246.125H124.472V123.021H247.649V246.042H299.979V298.508H300.021Z' fill='%23FF5539'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='clip0_574_6732'%3E%3Crect width='600' height='574' fill='white'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 48px 32px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Top bar */
+  .top-bar {
+    background: var(--dream-in-blue);
+    padding: 12px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .top-bar-logo { height: 28px; width: auto; }
+
+  .top-bar-nav {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .top-bar-nav a {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    letter-spacing: 0.03em;
+    transition: color 0.2s;
+  }
+
+  .top-bar-nav a:hover { color: #FFFFFF; }
+  .top-bar-nav a.active { color: var(--bull-orange); }
+
+  /* Header */
+  header {
+    margin-bottom: 56px;
+    border-bottom: 2px solid var(--color-border);
+    padding-bottom: 24px;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--bull-orange);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-family: 'Tosh A', sans-serif;
+    font-size: 48px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--dream-in-blue);
+  }
+
+  h1 span { color: var(--bull-orange); }
+
+  /* ── Timeline ── */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-left: 30px;
+  }
+
+  /* Vertical rail */
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 30px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--color-border-bright);
+  }
+
+  /* Step */
+  .step {
+    position: relative;
+    padding-left: 40px;
+    padding-bottom: 8px;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  .step:nth-child(1) { animation-delay: 0.05s; }
+  .step:nth-child(2) { animation-delay: 0.15s; }
+  .step:nth-child(3) { animation-delay: 0.25s; }
+  .step:nth-child(4) { animation-delay: 0.35s; }
+  .step:nth-child(5) { animation-delay: 0.45s; }
+  .step:nth-child(6) { animation-delay: 0.55s; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Node dot on rail */
+  .step::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 24px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 3px solid var(--color-border-bright);
+    background: var(--color-bg);
+    z-index: 2;
+    transition: all 0.25s ease;
+  }
+
+  .step:hover::before {
+    border-color: var(--bull-orange);
+    background: var(--bull-orange);
+    box-shadow: 0 0 16px rgba(255,85,57,0.35);
+  }
+
+  /* Card */
+  .card {
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: var(--color-surface);
+    overflow: hidden;
+    transition: border-color 0.25s, box-shadow 0.25s;
+  }
+
+  .card:hover {
+    border-color: var(--color-border-bright);
+    box-shadow: 0 8px 32px rgba(0,40,112,0.08);
+  }
+
+  .card-header {
+    padding: 20px 24px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .step-num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--color-text-dim);
+    padding-top: 5px;
+    flex-shrink: 0;
+    min-width: 24px;
+  }
+
+  .card-title-block { flex: 1; }
+
+  .card-title {
+    font-family: 'Tosh A', sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+
+  .card-trigger {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+
+  .badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Step color variants */
+  .step-1 .card-title { color: var(--vitality); }
+  .step-1 .badge { background: rgba(0,178,144,0.12); color: var(--vitality); }
+  .step-1 .card:hover { border-color: var(--vitality); }
+
+  .step-2 .card-title { color: var(--dream-in-blue); }
+  .step-2 .badge { background: rgba(0,40,112,0.08); color: var(--dream-in-blue); }
+  .step-2 .card:hover { border-color: var(--dream-in-blue); }
+
+  .step-3 .card-title { color: var(--bull-orange); }
+  .step-3 .badge { background: rgba(255,85,57,0.1); color: var(--bull-orange); }
+  .step-3 .card:hover { border-color: var(--bull-orange); }
+
+  .step-4 .card-title { color: var(--sunbeam); }
+  .step-4 .badge { background: rgba(255,182,0,0.12); color: #C49200; }
+  .step-4 .card:hover { border-color: var(--sunbeam); }
+
+  .step-5 .card-title { color: var(--sovereign); }
+  .step-5 .badge { background: rgba(28,56,245,0.08); color: var(--sovereign); }
+  .step-5 .card:hover { border-color: var(--sovereign); }
+
+  .step-6 .card-title { color: var(--blue-tint-1); }
+  .step-6 .badge { background: rgba(119,136,249,0.1); color: var(--blue-tint-1); }
+  .step-6 .card:hover { border-color: var(--blue-tint-1); }
+  .step-6 .card { border-style: dashed; }
+
+  /* Card body */
+  .card-body {
+    padding: 16px 24px 20px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .detail-block { flex: 1; min-width: 180px; }
+
+  .detail-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-text-dim);
+    margin-bottom: 8px;
+  }
+
+  .detail-items {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .detail-item {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.5;
+  }
+
+  .detail-item::before {
+    content: '\2014';
+    color: var(--color-text-dim);
+    flex-shrink: 0;
+    font-size: 12px;
+    margin-top: 1px;
+  }
+
+  .output-tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border: 1px solid var(--color-border-bright);
+    border-radius: 2px;
+    color: var(--color-text-secondary);
+    display: inline-block;
+    margin-top: 4px;
+    background: var(--color-bg);
+  }
+
+  .optional-badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--blue-tint-1);
+    border: 1px solid rgba(119,136,249,0.3);
+    padding: 2px 7px;
+    border-radius: 2px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* ── Downward flow arrows ── */
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 0 4px 6px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .flow-arrow-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .flow-arrow-icon svg {
+    width: 16px;
+    height: 16px;
+    color: var(--color-border-bright);
+  }
+
+  .flow-arrow-text {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-text-dim);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Execution cycle zone ── */
+  .execution-cycle {
+    position: relative;
+    margin: 0 0 0 -8px;
+    padding: 0 0 0 8px;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp 0.6s ease 0.25s forwards;
+  }
+
+  /* Orange left accent bar */
+  .execution-cycle::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 2px;
+    background: linear-gradient(to bottom, var(--bull-orange), var(--orange-tint-2));
+  }
+
+  /* Subtle tinted background */
+  .execution-cycle-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,85,57,0.03) 0%, rgba(255,228,223,0.06) 100%);
+    border-radius: 8px;
+    pointer-events: none;
+  }
+
+  .execution-cycle-inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Cycle header */
+  .cycle-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 16px 12px 16px;
+  }
+
+  .cycle-label {
+    font-family: 'Tosh A', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--bull-orange);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .cycle-hint {
+    font-size: 11px;
+    color: var(--color-text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .cycle-hint svg {
+    width: 14px;
+    height: 14px;
+    color: var(--bull-orange);
+    opacity: 0.6;
+  }
+
+  /* Loop-back arrow (right side SVG) */
+  .loop-arrow {
+    position: absolute;
+    right: -56px;
+    top: 50px;
+    bottom: 50px;
+    width: 48px;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .loop-arrow svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Steps inside the cycle get tighter spacing */
+  .execution-cycle .step {
+    padding-bottom: 4px;
+  }
+
+  .execution-cycle .flow-arrow {
+    padding: 2px 0 2px 6px;
+  }
+
+  /* Cycle footer — back-to-top indicator */
+  .cycle-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px 16px;
+    position: relative;
+  }
+
+  .cycle-loop-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--bull-orange);
+    background: rgba(255,85,57,0.06);
+    border: 1px solid rgba(255,85,57,0.15);
+    border-radius: 20px;
+    padding: 5px 14px;
+  }
+
+  .cycle-loop-badge svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* ── Footer ── */
+  .footer-wrap {
+    background: var(--dream-in-blue);
+    margin-top: 48px;
+    padding: 32px;
+  }
+
+  .footer-inner {
+    max-width: 920px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .footer-brand {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .footer-tagline {
+    font-family: 'Tosh A', sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.05em;
+  }
+
+  .footer-logo {
+    height: 22px;
+    width: auto;
+    opacity: 0.6;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .loop-arrow { display: none; }
+    h1 { font-size: 36px; }
+    .container { padding: 32px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation bar -->
+<nav class="top-bar">
+  <img src="./logos/BULL_LOGO_WHITE_RGB.svg" alt="Bull" class="top-bar-logo">
+  <div class="top-bar-nav">
+    <a href="#">Hub</a>
+    <a href="#">Philosophy</a>
+    <a href="#" class="active">Workflow</a>
+    <a href="#">Practices</a>
+    <a href="#">Invocation Graph</a>
+    <a href="#">Harness</a>
+    <a href="#">Skill Creator</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <header>
+    <div class="eyebrow">AI-native development</div>
+    <h1>Work<span>flow</span></h1>
+  </header>
+
+  <div class="timeline">
+
+    <!-- ─── 01 BRAINSTORM ─── -->
+    <div class="step step-1">
+      <div class="card">
+        <div class="card-header">
+          <div class="step-num">01</div>
+          <div class="card-title-block">
+            <div class="card-title">Brainstorming</div>
+            <div class="card-trigger">Activates before writing any code</div>
+          </div>
+          <div class="badge">ideate</div>
+        </div>
+        <div class="card-body">
+          <div class="detail-block">
+            <div class="detail-label">Process</div>
+            <div class="detail-items">
+              <div class="detail-item">Refines rough ideas through targeted questions</div>
+              <div class="detail-item">Explores alternatives and trade-offs</div>
+              <div class="detail-item">Presents design in sections for validation</div>
+            </div>
+          </div>
+          <div class="detail-block">
+            <div class="detail-label">Output</div>
+            <div class="detail-items">
+              <div class="detail-item"><span class="output-tag">design-document.md</span></div>
+            </div>
+            <div class="detail-label" style="margin-top:16px">Handoff condition</div>
+            <div class="detail-items">
+              <div class="detail-item">Design approved by human</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ▼ arrow -->
+    <div class="flow-arrow">
+      <div class="flow-arrow-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+      </div>
+      <div class="flow-arrow-text">approved design</div>
+    </div>
+
+    <!-- ─── 02 PLAN ─── -->
+    <div class="step step-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="step-num">02</div>
+          <div class="card-title-block">
+            <div class="card-title">Plan</div>
+            <div class="card-trigger">Activates with approved design document</div>
+          </div>
+          <div class="badge">plan</div>
+        </div>
+        <div class="card-body">
+          <div class="detail-block">
+            <div class="detail-label">Process</div>
+            <div class="detail-items">
+              <div class="detail-item">Decomposes work into small, executable tasks</div>
+              <div class="detail-item">Each task specifies exact file paths</div>
+              <div class="detail-item">Complete code and verification steps per task</div>
+            </div>
+          </div>
+          <div class="detail-block">
+            <div class="detail-label">Output</div>
+            <div class="detail-items">
+              <div class="detail-item"><span class="output-tag">plan.md</span></div>
+            </div>
+            <div class="detail-label" style="margin-top:16px">Handoff condition</div>
+            <div class="detail-items">
+              <div class="detail-item">Plan reviewed and confirmed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ▼ arrow -->
+    <div class="flow-arrow">
+      <div class="flow-arrow-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+      </div>
+      <div class="flow-arrow-text">confirmed plan</div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- EXECUTION CYCLE — Steps 03, 04, 05 loop    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="execution-cycle">
+      <div class="execution-cycle-bg"></div>
+
+      <!-- Loop-back arrow on the right side -->
+      <div class="loop-arrow">
+        <svg viewBox="0 0 48 300" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <!-- Downward path on the right, curves back up -->
+          <path d="M4 8 C4 8, 4 16, 16 16 L32 16 C40 16, 44 20, 44 28 L44 264 C44 276, 36 284, 28 284 L16 284 C8 284, 4 280, 4 272"
+                stroke="#FF5539" stroke-width="1.5" stroke-opacity="0.25" fill="none"/>
+          <!-- Arrowhead pointing up -->
+          <path d="M0 276 L4 268 L8 276" stroke="#FF5539" stroke-width="1.5" stroke-opacity="0.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- "repeat" label -->
+          <text x="44" y="150" transform="rotate(90, 44, 150)" text-anchor="middle"
+                font-family="Roboto, sans-serif" font-size="9" font-weight="700"
+                letter-spacing="0.12em" fill="#FF5539" fill-opacity="0.3">REPEAT</text>
+        </svg>
+      </div>
+
+      <div class="execution-cycle-inner">
+
+        <div class="cycle-header">
+          <div class="cycle-label">Execution cycle</div>
+          <div class="cycle-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            runs per task
+          </div>
+        </div>
+
+        <!-- ─── 03 WORK ─── -->
+        <div class="step step-3">
+          <div class="card">
+            <div class="card-header">
+              <div class="step-num">03</div>
+              <div class="card-title-block">
+                <div class="card-title">Work</div>
+                <div class="card-trigger">Activates with plan &middot; two execution modes</div>
+              </div>
+              <div class="badge">execute</div>
+            </div>
+            <div class="card-body">
+              <div class="detail-block">
+                <div class="detail-label">Mode A &mdash; subagent-driven</div>
+                <div class="detail-items">
+                  <div class="detail-item">Fresh subagent dispatched per task</div>
+                  <div class="detail-item">Two-stage review: spec compliance &rarr; code quality</div>
+                  <div class="detail-item">Isolated context per task, no bleed-over</div>
+                </div>
+              </div>
+              <div class="detail-block">
+                <div class="detail-label">Mode B &mdash; batched execution</div>
+                <div class="detail-items">
+                  <div class="detail-item">Tasks executed in batches</div>
+                  <div class="detail-item">Human checkpoint between each batch</div>
+                  <div class="detail-item">Review before proceeding to next batch</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ▼ arrow -->
+        <div class="flow-arrow">
+          <div class="flow-arrow-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+          </div>
+          <div class="flow-arrow-text">during implementation</div>
+        </div>
+
+        <!-- ─── 04 TDD ─── -->
+        <div class="step step-4">
+          <div class="card">
+            <div class="card-header">
+              <div class="step-num">04</div>
+              <div class="card-title-block">
+                <div class="card-title">Test-driven development</div>
+                <div class="card-trigger">Activates during implementation &middot; enforced loop</div>
+              </div>
+              <div class="badge">verify</div>
+            </div>
+            <div class="card-body">
+              <div class="detail-block">
+                <div class="detail-label">Red &rarr; Green &rarr; Refactor</div>
+                <div class="detail-items">
+                  <div class="detail-item">Write failing test &middot; watch it fail (RED)</div>
+                  <div class="detail-item">Write minimal code &middot; watch it pass (GREEN)</div>
+                  <div class="detail-item">Commit &middot; then refactor (REFACTOR)</div>
+                </div>
+              </div>
+              <div class="detail-block">
+                <div class="detail-label">Enforcement</div>
+                <div class="detail-items">
+                  <div class="detail-item">Code written before tests is deleted</div>
+                  <div class="detail-item">No skipping the RED phase</div>
+                  <div class="detail-item">No committing on failing tests</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ▼ arrow -->
+        <div class="flow-arrow">
+          <div class="flow-arrow-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+          </div>
+          <div class="flow-arrow-text">between tasks</div>
+        </div>
+
+        <!-- ─── 05 CODE REVIEW ─── -->
+        <div class="step step-5">
+          <div class="card">
+            <div class="card-header">
+              <div class="step-num">05</div>
+              <div class="card-title-block">
+                <div class="card-title">Code review</div>
+                <div class="card-trigger">Activates between tasks</div>
+              </div>
+              <div class="badge">gate</div>
+            </div>
+            <div class="card-body">
+              <div class="detail-block">
+                <div class="detail-label">Process</div>
+                <div class="detail-items">
+                  <div class="detail-item">Reviews implementation against plan spec</div>
+                  <div class="detail-item">Issues reported and categorised by severity</div>
+                </div>
+              </div>
+              <div class="detail-block">
+                <div class="detail-label">Gate rule</div>
+                <div class="detail-items">
+                  <div class="detail-item">Critical issues block all forward progress</div>
+                  <div class="detail-item">Must resolve before next task begins</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loop badge -->
+        <div class="cycle-footer">
+          <div class="cycle-loop-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            loop back to 03 until all tasks complete
+          </div>
+        </div>
+
+      </div><!-- end cycle-inner -->
+    </div><!-- end execution-cycle -->
+
+    <!-- ▼ arrow -->
+    <div class="flow-arrow">
+      <div class="flow-arrow-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+      </div>
+      <div class="flow-arrow-text">after task &middot; optional</div>
+    </div>
+
+    <!-- ─── 06 COMPOUND ─── -->
+    <div class="step step-6">
+      <div class="card">
+        <div class="card-header">
+          <div class="step-num">06</div>
+          <div class="card-title-block">
+            <div class="card-title">Compound <span class="optional-badge">optional</span></div>
+            <div class="card-trigger">Captures lessons learned &middot; accelerates future runs</div>
+          </div>
+          <div class="badge">learn</div>
+        </div>
+        <div class="card-body">
+          <div class="detail-block">
+            <div class="detail-label">Process</div>
+            <div class="detail-items">
+              <div class="detail-item">Extracts reusable lessons from completed task</div>
+              <div class="detail-item">Saves to structured .md folder system</div>
+              <div class="detail-item">Organised for future retrieval and reuse</div>
+            </div>
+          </div>
+          <div class="detail-block">
+            <div class="detail-label">Goal</div>
+            <div class="detail-items">
+              <div class="detail-item">Each run faster and better than the last</div>
+              <div class="detail-item">Institutional knowledge compounds over time</div>
+              <div class="detail-item"><span class="output-tag">lessons/*.md</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end timeline -->
+
+</div>
+
+<!-- Footer -->
+<div class="footer-wrap">
+  <div class="footer-inner">
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#00B290"></div>
+        ideate
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#002870"></div>
+        plan
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#FF5539"></div>
+        execute
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#FFB600"></div>
+        verify
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#1C38F5"></div>
+        gate
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#7788F9"></div>
+        learn
+      </div>
+    </div>
+    <div class="footer-brand">
+      <span class="footer-tagline">Master your AI destiny</span>
+      <img src="./logos/BULL_LOGO_WHITE_RGB.svg" alt="Bull" class="footer-logo">
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

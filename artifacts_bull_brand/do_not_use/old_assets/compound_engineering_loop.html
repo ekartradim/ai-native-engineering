@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compound Engineering Loop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #F5F4F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Roboto', sans-serif;
+    padding: 2rem;
+  }
+  .slide {
+    background: #FAFAF9;
+    max-width: 800px;
+    width: 100%;
+    box-shadow: 0 4px 32px rgba(0,40,112,0.12);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+<svg width="100%" viewBox="0 0 680 720" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <style>
+    .bull-title { font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 20px; fill: #002870; }
+    .stage-label { font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 1.5px; }
+    .stage-desc { font-family: 'Roboto', sans-serif; font-weight: 500; font-size: 11.5px; }
+    .bullet { font-family: 'Roboto', sans-serif; font-weight: 400; font-size: 10.5px; }
+    .center-label { font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 11px; fill: #FF5539; }
+    .center-sub { font-family: 'Roboto', sans-serif; font-weight: 400; font-size: 9.5px; fill: #888; }
+    .header-tag { font-family: 'Roboto', sans-serif; font-weight: 400; font-size: 10px; fill: #FF5539; letter-spacing: 2px; }
+  </style>
+</defs>
+
+<!-- Background -->
+<rect width="680" height="720" fill="#FAFAF9" rx="0"/>
+
+<!-- Top accent bar -->
+<rect x="0" y="0" width="680" height="4" fill="#FF5539"/>
+
+<!-- Header -->
+<text x="340" y="32" text-anchor="middle" class="header-tag">AI-NATIVE ENGINEERING</text>
+<text x="340" y="60" text-anchor="middle" class="bull-title" font-size="22px">Compound Engineering Loop</text>
+<line x1="200" y1="72" x2="480" y2="72" stroke="#FF5539" stroke-width="1.5" opacity="0.4"/>
+
+<!-- Arc: PLAN to WORK -->
+<path d="M 432 210 Q 510 240 510 290"
+  fill="none" stroke="#FF5539" stroke-width="2" opacity="0.7"
+  marker-end="url(#arrow)"/>
+
+<!-- Arc: WORK to REVIEW -->
+<path d="M 510 450 Q 510 520 432 535"
+  fill="none" stroke="#FF5539" stroke-width="2" opacity="0.7"
+  marker-end="url(#arrow)"/>
+
+<!-- Arc: REVIEW to COMPOUND -->
+<path d="M 248 535 Q 170 520 170 450"
+  fill="none" stroke="#FF5539" stroke-width="2" opacity="0.7"
+  marker-end="url(#arrow)"/>
+
+<!-- Arc: COMPOUND to PLAN -->
+<path d="M 170 290 Q 170 220 248 205"
+  fill="none" stroke="#FF5539" stroke-width="2" opacity="0.7"
+  marker-end="url(#arrow)"/>
+
+<!-- Center circle -->
+<circle cx="340" cy="370" r="72" fill="#FFF5F3" stroke="#FF5539" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.9"/>
+
+<!-- Inner feedback arrow -->
+<path d="M 340 302 Q 395 302 405 340 Q 415 375 385 403 Q 355 428 320 415 Q 288 403 278 370 Q 268 336 295 315 Q 310 305 340 302"
+  fill="none" stroke="#FF5539" stroke-width="1.5" opacity="0.5"
+  marker-end="url(#arrow)"/>
+
+<text x="340" y="360" text-anchor="middle" class="center-label">Institutional</text>
+<text x="340" y="374" text-anchor="middle" class="center-label">knowledge</text>
+<text x="340" y="390" text-anchor="middle" class="center-sub">feeds future planning</text>
+
+<!-- 01 PLAN -->
+<rect x="260" y="140" width="160" height="108" rx="10" fill="#002870"/>
+<rect x="260" y="140" width="5" height="108" rx="3" fill="#FF5539"/>
+<text x="278" y="162" class="stage-label" fill="#FF5539" font-size="11px">01</text>
+<text x="340" y="162" text-anchor="middle" class="stage-label" fill="#fff" font-size="13px">PLAN</text>
+<text x="340" y="178" text-anchor="middle" class="stage-desc" fill="#A4AFFB" font-size="10px">Research  Structured Plan</text>
+<text x="278" y="196" class="bullet" fill="#ccc">Searches past solutions</text>
+<text x="278" y="211" class="bullet" fill="#ccc">Creates implementation units</text>
+<text x="278" y="226" class="bullet" fill="#ccc">with dependencies</text>
+
+<!-- 02 WORK -->
+<rect x="440" y="315" width="160" height="108" rx="10" fill="#FF5539"/>
+<rect x="440" y="315" width="5" height="108" rx="3" fill="#FFB600"/>
+<text x="458" y="337" class="stage-label" fill="#FFE4DF" font-size="11px">02</text>
+<text x="520" y="337" text-anchor="middle" class="stage-label" fill="#fff" font-size="13px">WORK</text>
+<text x="520" y="353" text-anchor="middle" class="stage-desc" fill="#FFE4DF" font-size="10px">Execute  Validate  Commit</text>
+<text x="458" y="371" class="bullet" fill="#fff" opacity="0.9">Agent implements step by step</text>
+<text x="458" y="386" class="bullet" fill="#fff" opacity="0.9">Tests run after each change</text>
+<text x="458" y="401" class="bullet" fill="#fff" opacity="0.9">Git isolation (branches)</text>
+
+<!-- 03 REVIEW -->
+<rect x="260" y="490" width="160" height="108" rx="10" fill="#002870"/>
+<rect x="260" y="490" width="5" height="108" rx="3" fill="#00B290"/>
+<text x="278" y="512" class="stage-label" fill="#00B290" font-size="11px">03</text>
+<text x="340" y="512" text-anchor="middle" class="stage-label" fill="#fff" font-size="13px">REVIEW</text>
+<text x="340" y="528" text-anchor="middle" class="stage-desc" fill="#A4AFFB" font-size="10px">Semantic Code Review</text>
+<text x="278" y="546" class="bullet" fill="#ccc">5 reviewer agents always-on</text>
+<text x="278" y="561" class="bullet" fill="#ccc">Confidence-gated findings</text>
+<text x="278" y="576" class="bullet" fill="#ccc">(suppress below 0.60)</text>
+
+<!-- 04 COMPOUND -->
+<rect x="80" y="315" width="160" height="108" rx="10" fill="#FF5539"/>
+<rect x="80" y="315" width="5" height="108" rx="3" fill="#FFB600"/>
+<text x="98" y="337" class="stage-label" fill="#FFE4DF" font-size="11px">04</text>
+<text x="160" y="337" text-anchor="middle" class="stage-label" fill="#fff" font-size="13px">COMPOUND</text>
+<text x="160" y="353" text-anchor="middle" class="stage-desc" fill="#FFE4DF" font-size="10px">Capture Knowledge</text>
+<text x="98" y="371" class="bullet" fill="#fff" opacity="0.9">Structured metadata docs</text>
+<text x="98" y="386" class="bullet" fill="#fff" opacity="0.9">Stored in docs/solutions/</text>
+<text x="98" y="401" class="bullet" fill="#fff" opacity="0.9">Refreshes stale learnings</text>
+
+<!-- Footer -->
+<line x1="60" y1="640" x2="620" y2="640" stroke="#FF5539" stroke-width="0.5" opacity="0.3"/>
+<text x="340" y="662" text-anchor="middle" fill="#002870"
+  font-family="'Roboto', sans-serif" font-weight="300" font-size="13px" font-style="italic">
+  "Each unit of engineering work makes subsequent units easier, not harder."
+</text>
+
+<!-- Decorative dots -->
+<circle cx="620" cy="695" r="5" fill="#FF5539" opacity="0.15"/>
+<circle cx="635" cy="695" r="5" fill="#FF5539" opacity="0.25"/>
+<circle cx="650" cy="695" r="5" fill="#FF5539" opacity="0.4"/>
+
+<!-- DataSentics label -->
+<text x="60" y="697" font-family="'Roboto', sans-serif" font-size="9.5px" fill="#aaa" letter-spacing="1px">DATASENTICS, A BULL COMPANY</text>
+</svg>
+</div>
+</body>
+</html>

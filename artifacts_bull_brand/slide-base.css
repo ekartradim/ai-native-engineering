@@ -1,0 +1,263 @@
+/* ==========================================================================
+   Bull Brand — Shared Slide Base
+   Presentation: "Compound Engineering Systems in Practice"
+   ========================================================================== */
+
+/* --- Fonts --- */
+
+@font-face {
+  font-family: 'Tosh A';
+  src: url('assets/fonts/ToshA-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Tosh A';
+  src: url('assets/fonts/ToshA-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Tosh A';
+  src: url('assets/fonts/ToshA-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Brand Tokens --- */
+
+:root {
+  /* Primary */
+  --bull-orange: #FF5539;
+  --dream-in-blue: #002870;
+
+  /* Orange tints */
+  --orange-tint-1: #FF7761;
+  --orange-tint-2: #FF9280;
+  --orange-tint-3: #FFADA0;
+  --orange-tint-4: #FFE4DF;
+
+  /* Blue tints */
+  --blue-tint-1: #7788F9;
+  --blue-tint-2: #A4AFFB;
+
+  /* Secondary */
+  --sunbeam: #FFB600;
+  --vitality: #00B290;
+  --sovereign: #1C38F5;
+  --infinity: #000000;
+
+  /* Semantic */
+  --color-text-on-dark: #FFFFFF;
+  --color-text-muted: rgba(255, 255, 255, 0.65);
+  --color-card-bg: rgba(255, 255, 255, 0.07);
+  --color-card-border: rgba(255, 255, 255, 0.12);
+
+  /* Typography scale */
+  --font-display: 'Tosh A', sans-serif;
+  --font-body: 'Roboto', sans-serif;
+  --size-eyebrow: 10px;
+  --size-headline: 32px;
+  --size-sub-headline: 18px;
+  --size-body: 14px;
+  --size-small: 11px;
+
+  /* Spacing */
+  --slide-padding: 56px;
+  --card-radius: 10px;
+  --accent-bar-height: 4px;
+}
+
+/* --- Reset --- */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- Base --- */
+
+body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text-on-dark);
+  background: var(--infinity);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* --- Slide Container --- */
+
+.slide {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+  background: var(--dream-in-blue);
+  overflow: hidden;
+  padding: var(--slide-padding);
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Typography --- */
+
+h1, h2, h3, .display-text, .headline {
+  font-family: var(--font-display);
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--size-eyebrow);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  color: var(--bull-orange);
+  margin-bottom: 10px;
+}
+
+.headline {
+  font-size: var(--size-headline);
+  font-weight: 900;
+  color: var(--color-text-on-dark);
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+
+.headline .accent {
+  color: var(--bull-orange);
+}
+
+.sub-headline {
+  font-family: var(--font-body);
+  font-size: var(--size-sub-headline);
+  font-weight: 300;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* --- Accent Bar --- */
+
+.accent-bar {
+  width: 48px;
+  height: var(--accent-bar-height);
+  background: var(--bull-orange);
+  border-radius: 2px;
+  margin-bottom: 20px;
+}
+
+/* --- Card --- */
+
+.card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--card-radius);
+  padding: 20px;
+}
+
+/* --- Bull Symbol Logo (bottom-left, minimalistic) --- */
+
+.slide-logo {
+  position: absolute;
+  bottom: 28px;
+  left: 36px;
+  width: 36px;
+  height: auto;
+  z-index: 10;
+  opacity: 0.5;
+}
+
+.slide-logo svg {
+  width: 36px;
+  height: auto;
+  display: block;
+}
+
+/* --- Tree Monogram Watermark (bottom-right, subtle) --- */
+
+.slide-watermark {
+  position: absolute;
+  bottom: -40px;
+  right: -40px;
+  width: 340px;
+  height: auto;
+  z-index: 1;
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+.slide-watermark svg {
+  width: 340px;
+  height: auto;
+  display: block;
+}
+
+/* --- Numbered Badge --- */
+
+.badge-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bull-orange);
+  color: var(--color-text-on-dark);
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* --- Pill / Tag --- */
+
+.pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: var(--size-small);
+  font-weight: 500;
+  background: rgba(255, 85, 57, 0.15);
+  color: var(--bull-orange);
+  border: 1px solid rgba(255, 85, 57, 0.25);
+}
+
+/* --- Utility --- */
+
+.text-orange { color: var(--bull-orange); }
+.text-white { color: var(--color-text-on-dark); }
+.text-muted { color: var(--color-text-muted); }
+.text-sunbeam { color: var(--sunbeam); }
+.text-vitality { color: var(--vitality); }
+
+/* --- Closing Slide Variant --- */
+
+.slide.slide--closing {
+  background: var(--bull-orange);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.slide--closing .slide-logo {
+  left: 50%;
+  bottom: 36px;
+  transform: translateX(-50%);
+  opacity: 0.7;
+}
+
+/* --- Title Slide Variant --- */
+
+.slide.slide--title {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}

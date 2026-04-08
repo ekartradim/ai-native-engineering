@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compound Memory System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="slide-base.css">
+<style>
+  .slide {
+    padding: 56px 64px 52px;
+  }
+
+  /* Decorative rings */
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 85, 57, 0.08);
+  }
+  .ring-1 { width: 420px; height: 420px; bottom: -120px; right: -100px; }
+  .ring-2 { width: 600px; height: 600px; bottom: -220px; right: -200px; }
+  .ring-3 { width: 800px; height: 800px; bottom: -340px; right: -340px; }
+
+  /* Header */
+  .slide-label {
+    font-family: var(--font-body);
+    font-size: var(--size-small);
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--bull-orange);
+    margin-bottom: 8px;
+  }
+  .slide-title {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--color-text-on-dark);
+    margin-bottom: 40px;
+    line-height: 1.15;
+  }
+
+  /* Two-column grid */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    height: 480px;
+  }
+
+  .panel {
+    background: var(--color-card-bg);
+    border: 0.5px solid var(--color-card-border);
+    border-radius: var(--card-radius);
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+  }
+  .panel-label {
+    font-family: var(--font-body);
+    font-size: var(--size-eyebrow);
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--bull-orange);
+    margin-bottom: 24px;
+  }
+
+  /* Phase rows */
+  .phase-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .phase-num {
+    background: var(--bull-orange);
+    color: var(--color-text-on-dark);
+    font-size: 12px;
+    font-weight: 700;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .phase-name {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-text-on-dark);
+    margin-bottom: 5px;
+  }
+  .phase-code {
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    background: rgba(255, 85, 57, 0.2);
+    color: var(--orange-tint-2);
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+  .phase-desc {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.6;
+  }
+  .phase-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 6px 0 22px 41px;
+  }
+  .phase-divider-line {
+    flex: 1;
+    height: 0.5px;
+    background: rgba(255,255,255,0.15);
+  }
+  .phase-divider-arrow {
+    color: rgba(255,255,255,0.3);
+    font-size: 14px;
+  }
+
+  /* Right panel */
+  .token-label {
+    font-family: var(--font-body);
+    font-size: var(--size-small);
+    font-weight: 500;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 14px;
+  }
+  .token-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-top: 0.5px solid rgba(255,255,255,0.1);
+  }
+  .token-approach {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    max-width: 70%;
+    line-height: 1.4;
+  }
+  .token-bad {
+    font-size: 16px;
+    font-weight: 700;
+    color: #E24B4A;
+  }
+  .token-good {
+    font-size: 16px;
+    font-weight: 700;
+    color: #5DCAA5;
+  }
+  .reduction-badge {
+    display: inline-block;
+    background: rgba(93, 202, 165, 0.15);
+    border: 0.5px solid rgba(93, 202, 165, 0.3);
+    color: #5DCAA5;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin: 16px 0 20px;
+  }
+  .insight-box {
+    flex: 1;
+    background: rgba(255, 85, 57, 0.1);
+    border: 0.5px solid rgba(255, 85, 57, 0.28);
+    border-radius: 8px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .insight-label {
+    font-family: var(--font-body);
+    font-size: var(--size-eyebrow);
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--bull-orange);
+    margin-bottom: 8px;
+  }
+  .insight-text {
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.65;
+  }
+  .insight-em {
+    color: var(--color-text-on-dark);
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="ring ring-1"></div>
+  <div class="ring ring-2"></div>
+  <div class="ring ring-3"></div>
+
+  <p class="slide-label">Compound Engineering Systems</p>
+  <h1 class="slide-title">Plan + Compound Memory System</h1>
+
+  <div class="grid">
+    <!-- Left: Two-phase architecture -->
+    <div class="panel">
+      <p class="panel-label">Two-phase architecture</p>
+
+      <div class="phase-row">
+        <div class="phase-num">1</div>
+        <div class="phase-body">
+          <p class="phase-name">Capture</p>
+          <span class="phase-code">/ce-compound</span>
+          <p class="phase-desc">Writes one structured file per solved problem. Mandatory YAML frontmatter with enum-validated fields. The frontmatter is the search interface.</p>
+        </div>
+      </div>
+
+      <div class="phase-divider">
+        <div class="phase-divider-line"></div>
+        <span class="phase-divider-arrow">&#8595;</span>
+        <div class="phase-divider-line"></div>
+      </div>
+
+      <div class="phase-row">
+        <div class="phase-num">2</div>
+        <div class="phase-body">
+          <p class="phase-name">Retrieval</p>
+          <span class="phase-code">/ce-plan &#8594; learnings-researcher</span>
+          <p class="phase-desc">Auto-spawns on every planning session. Greps frontmatter &#8594; scores candidates &#8594; full-reads only strong matches (3&#8211;7 files).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Token economics + key insight -->
+    <div class="panel">
+      <p class="panel-label">Token economics</p>
+
+      <p class="token-label">Approach &#8594; tokens used</p>
+      <div class="token-row">
+        <span class="token-approach">Load all solutions into context</span>
+        <span class="token-bad">~50,000+</span>
+      </div>
+      <div class="token-row">
+        <span class="token-approach">Grep &#8594; frontmatter &#8594; score &#8594; read</span>
+        <span class="token-good">500&#8211;2,000</span>
+      </div>
+
+      <div>
+        <span class="reduction-badge">25&#8211;100&#215; less context consumed</span>
+      </div>
+
+      <div class="insight-box">
+        <p class="insight-label">Key insight</p>
+        <p class="insight-text">The <span class="insight-em">YAML frontmatter schema is the retrieval mechanism</span> &#8212; a grep-based search index designed for ripgrep. No vector DB, no embeddings, no external service.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bull Symbol Logo -->
+  <div class="slide-logo">
+    <svg viewBox="0 0 600 574" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M567.858 259.576C572.205 248.339 574.629 236.183 574.629 223.443C574.629 168.553 530.324 123.815 475.569 123.063C472.811 70.0947 429.007 28.0295 375.34 28.0295C345.329 28.0295 318.453 41.188 300.063 62.0326C281.672 41.188 254.754 28.0295 224.786 28.0295C171.369 28.0295 127.691 69.7188 124.598 122.353V0H1.37931V123.104H123.093C68.9655 124.608 25.4127 169.013 25.4127 223.443C25.4127 236.183 27.837 248.381 32.1839 259.576C12.4138 277.914 0 304.106 0 333.18C0 388.571 45.0993 433.602 100.481 433.602H209.404L250.491 474.664V574H349.467V475.082L391.014 433.56H499.519C554.943 433.56 600 388.529 600 333.138C600 304.106 587.586 277.914 567.816 259.534L567.858 259.576ZM300.021 298.508H247.523V246.125H124.472V123.021H247.649V246.042H299.979V298.508H300.021Z" fill="white"/>
+    </svg>
+  </div>
+
+  <!-- Tree Monogram Watermark -->
+  <div class="slide-watermark">
+    <svg width="600" height="574" viewBox="0 0 600 574" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M567.858 259.576C572.205 248.339 574.629 236.183 574.629 223.443C574.629 168.553 530.324 123.815 475.569 123.063C472.811 70.0947 429.007 28.0295 375.34 28.0295C345.329 28.0295 318.453 41.188 300.063 62.0326C281.672 41.188 254.754 28.0295 224.786 28.0295C171.369 28.0295 127.691 69.7188 124.598 122.353V0H1.37931V123.104H123.093C68.9655 124.608 25.4127 169.013 25.4127 223.443C25.4127 236.183 27.837 248.381 32.1839 259.576C12.4138 277.914 0 304.106 0 333.18C0 388.571 45.0993 433.602 100.481 433.602H209.404L250.491 474.664V574H349.467V475.082L391.014 433.56H499.519C554.943 433.56 600 388.529 600 333.138C600 304.106 587.586 277.914 567.816 259.534L567.858 259.576ZM300.021 298.508H247.523V246.125H124.472V123.021H247.649V246.042H299.979V298.508H300.021Z" fill="white"/>
+    </svg>
+  </div>
+</div>
+</body>
+</html>

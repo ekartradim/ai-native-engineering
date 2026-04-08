@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compound Engineering Loop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="slide-base.css">
+<style>
+  body {
+    background: var(--infinity);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-body);
+    overflow: hidden;
+  }
+
+  .slide {
+    position: relative;
+    width: 1280px;
+    height: 720px;
+    background: var(--dream-in-blue);
+    border-radius: 6px;
+    overflow: hidden;
+    padding: 48px 44px 40px;
+    box-shadow:
+      0 40px 100px rgba(0,0,0,0.7),
+      0 0 0 1px rgba(255,255,255,0.06),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  .slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .top-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--bull-orange) 0%, rgba(255,85,57,0.3) 70%, transparent 100%);
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 0.05s forwards;
+  }
+  .eyebrow {
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 3.5px;
+    color: var(--bull-orange);
+    text-transform: uppercase;
+    margin-bottom: 9px;
+  }
+  .title {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--color-text-on-dark);
+    letter-spacing: -0.2px;
+  }
+  .title-rule {
+    width: 40px;
+    height: 2px;
+    background: var(--bull-orange);
+    margin: 12px auto 0;
+    border-radius: 1px;
+    opacity: 0.55;
+  }
+
+  .canvas {
+    position: relative;
+    width: 772px;
+    height: 420px;
+    margin: 0 auto;
+  }
+
+  .stage {
+    position: absolute;
+    width: 185px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-card-border);
+    border-radius: 7px;
+    padding: 16px 18px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    cursor: default;
+    opacity: 0;
+    z-index: 2;
+  }
+
+  .s-plan     { top: 0;    left: 50%; transform: translateX(-50%); }
+  .s-work     { top: 50%;  right: 0;  transform: translateY(-50%); }
+  .s-review   { bottom: 0; left: 50%; transform: translateX(-50%); }
+  .s-compound { top: 50%;  left: 0;   transform: translateY(-50%); }
+
+  .stage::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    border-radius: 7px 7px 0 0;
+  }
+  .s-plan::before     { background: var(--blue-tint-1); }
+  .s-work::before     { background: var(--bull-orange); }
+  .s-review::before   { background: var(--vitality); }
+  .s-compound::before { background: var(--sunbeam); }
+
+  .s-plan:hover     { border-color: rgba(119,136,249,0.35); box-shadow: 0 8px 32px rgba(119,136,249,0.18); transform: translateX(-50%) translateY(-4px) scale(1.025); }
+  .s-work:hover     { border-color: rgba(255,85,57,0.4);   box-shadow: 0 8px 32px rgba(255,85,57,0.2);   transform: translateY(-50%) translateX(4px) scale(1.025); }
+  .s-review:hover   { border-color: rgba(0,178,144,0.35);  box-shadow: 0 8px 32px rgba(0,178,144,0.18);  transform: translateX(-50%) translateY(4px) scale(1.025); }
+  .s-compound:hover { border-color: rgba(255,182,0,0.35);  box-shadow: 0 8px 32px rgba(255,182,0,0.18);  transform: translateY(-50%) translateX(-4px) scale(1.025); }
+
+  .stage-num {
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .s-plan     .stage-num { color: var(--blue-tint-1); }
+  .s-work     .stage-num { color: var(--bull-orange); }
+  .s-review   .stage-num { color: var(--vitality); }
+  .s-compound .stage-num { color: var(--sunbeam); }
+
+  .stage-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--color-text-on-dark);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .stage-sub {
+    font-size: 10px;
+    color: var(--color-text-muted);
+    margin-bottom: 11px;
+    line-height: 1.4;
+  }
+  .bullets { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .bullets li {
+    font-size: 9.5px;
+    color: rgba(255,255,255,0.3);
+    line-height: 1.4;
+    padding-left: 12px;
+    position: relative;
+  }
+  .bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 5.5px;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    opacity: 0.55;
+  }
+  .s-plan     .bullets li::before { background: var(--blue-tint-1); }
+  .s-work     .bullets li::before { background: var(--bull-orange); }
+  .s-review   .bullets li::before { background: var(--vitality); }
+  .s-compound .bullets li::before { background: var(--sunbeam); }
+
+  /* Center: spinning ring with just the glyph */
+  .center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeIn 0.5s ease 1s forwards;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .ring-outer {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(255,85,57,0.25);
+    display: flex; align-items: center; justify-content: center;
+    animation: spin 30s linear infinite;
+  }
+  .ring-inner {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: rgba(255,85,57,0.06);
+    border: 1px solid rgba(255,85,57,0.18);
+    display: flex; align-items: center; justify-content: center;
+    animation: spin 30s linear infinite reverse;
+  }
+  .center-glyph {
+    font-size: 22px;
+    color: var(--bull-orange);
+    opacity: 0.8;
+    line-height: 1;
+  }
+
+  /* SVG arcs — clean cubics, no gaps */
+  .arcs {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .arc {
+    fill: none;
+    stroke: rgba(255,85,57,0.55);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    opacity: 0;
+    stroke-dasharray: 500;
+    stroke-dashoffset: 500;
+  }
+  .arc.visible {
+    opacity: 1;
+    animation: drawLine 0.9s cubic-bezier(0.4,0,0.2,1) forwards;
+  }
+
+  /* Footer */
+  .footer {
+    position: relative;
+    z-index: 1;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 1.3s forwards;
+  }
+
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-shrink: 0;
+    min-width: 130px;
+  }
+  .bull-symbol {
+    width: 20px;
+    height: 19px;
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+  .footer-brand-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .footer-ds {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: rgba(255,255,255,0.65);
+    text-transform: uppercase;
+  }
+  .footer-sub {
+    font-size: 8px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.28);
+    text-transform: uppercase;
+  }
+
+  .footer-quote {
+    font-size: 11.5px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--color-text-muted);
+    text-align: center;
+    letter-spacing: 0.1px;
+    flex: 1;
+  }
+
+  .footer-right {
+    min-width: 130px;
+  }
+
+  /* Keyframes */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes drawLine {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); } to { transform: rotate(360deg); }
+  }
+
+  .s-plan {
+    animation: entryTop 0.5s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+  }
+  .s-work {
+    animation: entryRight 0.5s cubic-bezier(0.16,1,0.3,1) 0.4s forwards;
+  }
+  .s-review {
+    animation: entryBottom 0.5s cubic-bezier(0.16,1,0.3,1) 0.6s forwards;
+  }
+  .s-compound {
+    animation: entryLeft 0.5s cubic-bezier(0.16,1,0.3,1) 0.8s forwards;
+  }
+
+  @keyframes entryTop {
+    from { opacity:0; transform: translateX(-50%) translateY(-14px); }
+    to   { opacity:1; transform: translateX(-50%) translateY(0); }
+  }
+  @keyframes entryRight {
+    from { opacity:0; transform: translateY(-50%) translateX(14px); }
+    to   { opacity:1; transform: translateY(-50%) translateX(0); }
+  }
+  @keyframes entryBottom {
+    from { opacity:0; transform: translateX(-50%) translateY(14px); }
+    to   { opacity:1; transform: translateX(-50%) translateY(0); }
+  }
+  @keyframes entryLeft {
+    from { opacity:0; transform: translateY(-50%) translateX(-14px); }
+    to   { opacity:1; transform: translateY(-50%) translateX(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .stage, .header, .footer, .center { opacity: 1 !important; }
+    .arc { stroke-dashoffset: 0 !important; opacity: 1 !important; }
+    .s-plan     { transform: translateX(-50%); }
+    .s-work     { transform: translateY(-50%); }
+    .s-review   { transform: translateX(-50%); }
+    .s-compound { transform: translateY(-50%); }
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="top-bar"></div>
+
+  <header class="header">
+    <p class="eyebrow">AI-Native Engineering</p>
+    <h1 class="title">Compound Engineering Loop</h1>
+    <div class="title-rule"></div>
+  </header>
+
+  <div class="canvas" id="canvas">
+    <!--
+      Canvas ~772px wide x 420px tall.
+      Card approximate centres:
+        PLAN:     cx=386, top edge y=0,   bottom ~y=130
+        WORK:     right=0, cx~679, cy=210
+        REVIEW:   cx=386, bottom edge y=420, top ~y=290
+        COMPOUND: left=0,  cx~93,  cy=210
+
+      Arrows connect card mid-edges cleanly with cubic beziers:
+        PLAN right (479, 65) → WORK top (679, 145)
+        WORK bottom (679, 275) → REVIEW right (479, 355)
+        REVIEW left (293, 355) → COMPOUND bottom (93, 275)
+        COMPOUND top (93, 145) → PLAN left (293, 65)
+    -->
+    <svg class="arcs" id="arcs" viewBox="0 0 772 420" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5"
+          markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M1 1.5L9 5L1 8.5" fill="none" stroke="rgba(255,85,57,0.85)"
+            stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <!-- PLAN → WORK -->
+      <path class="arc" id="a1"
+        d="M 479 65 C 590 65 679 120 679 145"
+        marker-end="url(#ah)"/>
+      <!-- WORK → REVIEW -->
+      <path class="arc" id="a2"
+        d="M 679 275 C 679 355 590 355 479 355"
+        marker-end="url(#ah)"/>
+      <!-- REVIEW → COMPOUND -->
+      <path class="arc" id="a3"
+        d="M 293 355 C 182 355 93 300 93 275"
+        marker-end="url(#ah)"/>
+      <!-- COMPOUND → PLAN -->
+      <path class="arc" id="a4"
+        d="M 93 145 C 93 65 182 65 293 65"
+        marker-end="url(#ah)"/>
+    </svg>
+
+    <!-- 01 PLAN -->
+    <div class="stage s-plan">
+      <div class="stage-num">01</div>
+      <div class="stage-name">Plan</div>
+      <div class="stage-sub">Research &rarr; Structured plan document</div>
+      <ul class="bullets">
+        <li>Searches past solutions automatically</li>
+        <li>Avoids past mistakes automatically</li>
+        <li>Creates implementation units with human in the loop</li>
+      </ul>
+    </div>
+
+    <!-- 02 WORK -->
+    <div class="stage s-work">
+      <div class="stage-num">02</div>
+      <div class="stage-name">Work</div>
+      <div class="stage-sub">Execute &rarr; Validate &rarr; Commit</div>
+      <ul class="bullets">
+        <li>Agent implements step by step</li>
+        <li>Tests run after each change</li>
+        <li>Deterministic quality gates as last step before review</li>
+      </ul>
+    </div>
+
+    <!-- 03 REVIEW -->
+    <div class="stage s-review">
+      <div class="stage-num">03</div>
+      <div class="stage-name">Review</div>
+      <div class="stage-sub">Semantic code review</div>
+      <ul class="bullets">
+        <li>5 always-on reviewer agents + conditional specialists</li>
+        <li>Deduplication across reviewers</li>
+		<li>Security audit</li>
+        <li>Agents see screenshots and test output directly</li>
+      </ul>
+    </div>
+
+    <!-- 04 COMPOUND -->
+    <div class="stage s-compound">
+      <div class="stage-num">04</div>
+      <div class="stage-name">Compound</div>
+      <div class="stage-sub">Maintain the knowledge</div>
+      <ul class="bullets">
+        <li>Documents solutions with structured metadata</li>
+        <li>Stored in docs/solutions/ for future retrieval</li>
+        <li>Conditionally triggers refresh of stale memories</li>
+      </ul>
+    </div>
+
+    <!-- Center: just spinning glyph, no text labels -->
+    <div class="center">
+      <div class="ring-outer">
+        <div class="ring-inner">
+          <div class="center-glyph">&#8635;</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /canvas -->
+
+  <footer class="footer">
+    <div class="footer-logo">
+      <svg class="bull-symbol" viewBox="0 0 600 574" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M567.858 259.576C572.205 248.339 574.629 236.183 574.629 223.443C574.629 168.553 530.324 123.815 475.569 123.063C472.811 70.0947 429.007 28.0295 375.34 28.0295C345.329 28.0295 318.453 41.188 300.063 62.0326C281.672 41.188 254.754 28.0295 224.786 28.0295C171.369 28.0295 127.691 69.7188 124.598 122.353V0H1.37931V123.104H123.093C68.9655 124.608 25.4127 169.013 25.4127 223.443C25.4127 236.183 27.837 248.381 32.1839 259.576C12.4138 277.914 0 304.106 0 333.18C0 388.571 45.0993 433.602 100.481 433.602H209.404L250.491 474.664V574H349.467V475.082L391.014 433.56H499.519C554.943 433.56 600 388.529 600 333.138C600 304.106 587.586 277.914 567.816 259.534L567.858 259.576ZM300.021 298.508H247.523V246.125H124.472V123.021H247.649V246.042H299.979V298.508H300.021Z" fill="white"/>
+      </svg>
+      <div class="footer-brand-wrap">
+        <span class="footer-ds">DataSentics</span>
+        <span class="footer-sub">a Bull Company</span>
+      </div>
+    </div>
+
+    <p class="footer-quote">"Each unit of engineering work makes subsequent units easier, not harder."</p>
+
+    <div class="footer-right"></div>
+  </footer>
+
+  <!-- Tree Monogram Watermark -->
+  <div class="slide-watermark">
+    <svg width="600" height="574" viewBox="0 0 600 574" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M567.858 259.576C572.205 248.339 574.629 236.183 574.629 223.443C574.629 168.553 530.324 123.815 475.569 123.063C472.811 70.0947 429.007 28.0295 375.34 28.0295C345.329 28.0295 318.453 41.188 300.063 62.0326C281.672 41.188 254.754 28.0295 224.786 28.0295C171.369 28.0295 127.691 69.7188 124.598 122.353V0H1.37931V123.104H123.093C68.9655 124.608 25.4127 169.013 25.4127 223.443C25.4127 236.183 27.837 248.381 32.1839 259.576C12.4138 277.914 0 304.106 0 333.18C0 388.571 45.0993 433.602 100.481 433.602H209.404L250.491 474.664V574H349.467V475.082L391.014 433.56H499.519C554.943 433.56 600 388.529 600 333.138C600 304.106 587.586 277.914 567.816 259.534L567.858 259.576ZM300.021 298.508H247.523V246.125H124.472V123.021H247.649V246.042H299.979V298.508H300.021Z" fill="white"/>
+    </svg>
+  </div>
+</div>
+
+<script>
+  const delays = [200, 450, 700, 950];
+  ['a1','a2','a3','a4'].forEach((id, i) => {
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('visible');
+    }, delays[i]);
+  });
+</script>
+</body>
+</html>
