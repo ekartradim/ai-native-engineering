@@ -9,11 +9,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="slide-base.css">
 <style>
+  .slide.slide--closing {
+    background: var(--dream-in-blue);
+  }
+
   .slide--closing .thanks {
     font-family: var(--font-display);
     font-size: 52px;
     font-weight: 900;
-    color: var(--color-text-on-dark);
+    color: #ffffff;
     line-height: 1.1;
     margin-bottom: 20px;
   }
@@ -21,7 +25,7 @@
   .slide--closing .divider {
     width: 56px;
     height: 4px;
-    background: rgba(255, 255, 255, 0.6);
+    background: var(--bull-orange);
     border-radius: 2px;
     margin: 0 auto 24px;
   }
@@ -30,7 +34,7 @@
     font-family: var(--font-body);
     font-size: 22px;
     font-weight: 300;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.92);
     margin-bottom: 8px;
   }
 
@@ -38,9 +42,13 @@
     font-family: var(--font-body);
     font-size: 13px;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.6);
     margin-top: 32px;
     letter-spacing: 0.5px;
+  }
+
+  .slide--closing .slide-watermark {
+    opacity: 0.08;
   }
 </style>
 </head>
